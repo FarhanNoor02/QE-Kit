@@ -1,4 +1,4 @@
-[build-system]
+[[build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
@@ -14,4 +14,12 @@ dependencies = [
 ]
 
 [project.scripts]
-qekit = "qekit:main"  # Connects terminal command to the code
+qekit = "qekit:main"
+
+# --- ADD THIS SECTION ---
+[tool.setuptools]
+py-modules = ["qekit"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["modules*", "utils*"]
