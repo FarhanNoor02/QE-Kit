@@ -78,7 +78,7 @@ def run_300_structure_refinement():
     for idx, val in celldm_matches:
         new_vals[f'celldm({idx})'] = val
 
-    # 6. Surgical scf.in rewrite
+# 6. Surgical scf.in rewrite
     with open(scf_in, 'r') as f:
         old_scf = f.readlines()
 
@@ -92,7 +92,7 @@ def run_300_structure_refinement():
     for line in old_scf:
         clean_line = line.strip().upper()
 
-        # Handle &SYSTEM namelist
+        # --- Handle &SYSTEM namelist ---
         if "&SYSTEM" in clean_line:
             in_system = True
             new_scf.append(line)
@@ -107,13 +107,20 @@ def run_300_structure_refinement():
             if "/" in clean_line: in_system = False
             if lattice_vars.match(line): continue
 
-        # Handle Block Removal and Replacement
+        # --- Block Management ---
+        
+        # 1. Keep ATOMIC_SPECIES (We no longer skip this)
         if "ATOMIC_SPECIES" in clean_line:
-            skip_mode = 'species'
+            skip_mode = None # Ensure we are writing
+            new_scf.append(line)
             continue
+
+        # 2. Skip old CELL_PARAMETERS matrix
         if "CELL_PARAMETERS" in clean_line:
             skip_mode = 'cell'
             continue
+            
+        # 3. Replace ATOMIC_POSITIONS with the relaxed ones
         if "ATOMIC_POSITIONS" in clean_line:
             if not positions_injected:
                 new_scf.extend(pos_lines)
@@ -122,14 +129,14 @@ def run_300_structure_refinement():
             continue
         
         # Reset skip_mode when hitting K_POINTS or next namelist
-        if any(x in clean_line for x in ["K_POINTS", "&ELECTRONS", "&IONS", "&CONTROL"]):
+        if any(x in clean_line for x in ["K_POINTS", "&ELECTRONS", "&IONS", "&CONTROL", "ATOMIC_SPECIES"]):
             skip_mode = None
 
-        # Line exclusion logic
-        if skip_mode == 'species' and len(line.split()) >= 3: continue
+        # Logic to skip lines belonging to old blocks we want to replace
         if skip_mode == 'cell' and len(line.split()) == 3: continue
         if skip_mode == 'positions' and len(line.split()) >= 4: continue
         
+        # Write the line if we aren't in a skip mode
         if skip_mode is None:
             new_scf.append(line)
 
