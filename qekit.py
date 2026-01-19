@@ -1,5 +1,5 @@
 import os
-import questionary  # <--- THIS LINE IS MISSING OR MISPLACED
+import questionary  
 import sys
 from modules import structure2in, pseudo_select, kpath_gen, scf_gen,vcrelax_gen, nscf_gen
 from modules import pdos_gen, bands_gen, optical_gen, phonon_gen, optimized, phonon_proc
@@ -7,13 +7,13 @@ from utils import config_manager
 
 def show_banner():
     print("---------######----########----------##----###-----------------")
-    print("-------##-----##---##----------------##--###-----#-----##------")
+    print("-------##-----##---##----------------##--###----***----##------")
     print("-------##-----##---#######-----------##-##------##--######-----")
     print("-------##-----##---##--------######--##--##-----##----##-------")
     print("-------###----##---##----------------##---###---##----##-------")
     print("---------######----########----------##-----##--##----###------")
     print("------------####-----------------------------------------------")
-    print("=====================By: Farhan Noor===========================")
+    print("--------=======By: Farhan Noor,University of Dhaka=======------")
     print("---A Pre-/Post-processing tool for use with Quantum ESPRESSO---")
     print("---------------------------------------------------------------")
 
