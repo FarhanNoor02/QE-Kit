@@ -84,6 +84,7 @@ def post_processing_menu():
                 "300: Optimized structure (Update scf.in)", # Update this text
                 "301: Phonon Dispersions (q2r & matdyn setup)",
                 "302: PDOS Summation (sumpdos.x)",
+                "303: Optical Properties (epsilon.x data)"
                 "Return to Main Menu"
             ]
         ).ask()
