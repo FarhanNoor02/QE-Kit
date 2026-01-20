@@ -2,19 +2,19 @@ import os
 import questionary  
 import sys
 from modules import structure2in, pseudo_select, kpath_gen, scf_gen,vcrelax_gen, nscf_gen
-from modules import pdos_gen, bands_gen, optical_gen, phonon_gen, optimized, phonon_proc
+from modules import pdos_gen, bands_gen, optical_gen, phonon_gen, optimized, phonon_proc, optical_proc
 from utils import config_manager
 
 def show_banner():
     print("---------######----########----------##----###-----------------")
     print("-------##-----##---##----------------##--###----***----##------")
+    print("-------##-----##---##----------------##--###----**-----##------")
     print("-------##-----##---#######-----------##-##------##--######-----")
     print("-------##-----##---##--------######--##--##-----##----##-------")
     print("-------###----##---##----------------##---###---##----##-------")
     print("---------######----########----------##-----##--##----###------")
     print("------------####-----------------------------------------------")
     print("--------=======By: Farhan Noor,University of Dhaka=======------")
-    print("---A Pre-/Post-processing tool for use with Quantum ESPRESSO---")
     print("---------------------------------------------------------------")
 
 def pre_processing_menu():
@@ -83,6 +83,7 @@ def post_processing_menu():
             choices=[
                 "300: Optimized structure (Update scf.in)", # Update this text
                 "301: Phonon Dispersions (q2r & matdyn setup)",
+                "302: PDOS Summation (sumpdos.x)",
                 "Return to Main Menu"
             ]
         ).ask()
@@ -91,6 +92,10 @@ def post_processing_menu():
             optimized.run_300_structure_refinement() # Call the function
         elif choice == "301: Phonon Dispersions (q2r & matdyn setup)":
             phonon_proc.run_301_phonon_processing()
+        elif choice == "302: PDOS Summation (sumpdos.x)":
+            pdos_proc.run_302_pdos_summation()
+        elif choice == "303: Optical Properties (epsilon.x data)":
+            optical_proc.run_303_optical_processing()
         elif choice == "Return to Main Menu":
             break
 
