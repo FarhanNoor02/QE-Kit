@@ -4,14 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qekit"
-version = "0.2"  # Bumped version to trigger the update
+version = "0.2.2"
 description = "A comprehensive pre- and post-processing toolkit for Quantum ESPRESSO"
 readme = "README.md"
-authors = [{ name = "Farhan Noor", email = "your.email@example.com" }]
+authors = [{ name = "Farhan Noor", email = "s-2019418104@phy.du.ac.bd" }]
 license = { text = "MIT" }
 requires-python = ">=3.8"
 
-# Added pandas and numpy for Optical/PDOS processing
 dependencies = [
     "questionary",
     "numpy",
@@ -22,7 +21,10 @@ dependencies = [
 ]
 
 [project.scripts]
-qekit = "qekit:main"
+qekit = "qekit:main"  # This tells pipx to run the 'main' function inside qekit.py
+
+[tool.setuptools]
+py-modules = ["qekit"]  # This tells setuptools that qekit.py is a top-level module
 
 [tool.setuptools.packages.find]
 where = ["."]
