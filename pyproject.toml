@@ -4,10 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qekit"
-version = "0.1.0"
+version = "0.2"  # Bumped version to trigger the update
+description = "A comprehensive pre- and post-processing toolkit for Quantum ESPRESSO"
+readme = "README.md"
+authors = [{ name = "Farhan Noor", email = "your.email@example.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+
+# Added pandas and numpy for Optical/PDOS processing
 dependencies = [
     "questionary",
     "numpy",
+    "pandas",
     "spglib",
     "seekpath",
     "ase"
@@ -15,10 +23,6 @@ dependencies = [
 
 [project.scripts]
 qekit = "qekit:main"
-
-# --- ADD THIS SECTION ---
-[tool.setuptools]
-py-modules = ["qekit"]
 
 [tool.setuptools.packages.find]
 where = ["."]
