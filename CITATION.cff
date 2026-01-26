@@ -1,0 +1,26 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: QE-Kit
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Farhan
+    family-names: Noor
+    email: s-2019418104@phy.du.ac.bd
+    name-particle: Farhan
+    affiliation: University of Dhaka
+repository-code: 'https://github.com/FarhanNoor02/QE-Kit'
+url: 'https://github.com/FarhanNoor02'
+abstract: >-
+  A Pre-/Post-processing tool to be used with Quantum ESPRESSO 
+keywords:
+  - Quantum ESPRESSO
+  - CLI-app
+  - Script
+  - Input file generation
+  - High-Throughput computations
+license: GPL-3.0
