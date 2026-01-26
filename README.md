@@ -1,12 +1,11 @@
 # QE-Kit (v0.2.2) 
-### A Comprehensive Pre- & Post-Processing Suite for Quantum ESPRESSO
+### A Pre- & Post-Processing Suite for Quantum ESPRESSO
 
 **Author:** Farhan Noor  
 **Affiliation:** Department of Physics, University of Dhaka  
 **Status:** Active Development (v0.2.2)
 
-QE-Kit is a Python-powered Command Line Interface (CLI) designed to automate the end-to-end research workflow for Density Functional Theory (DFT) calculations. From structural discovery to publication-quality data extraction, QE-Kit minimizes human error and accelerates high-throughput material analysis.
-
+QE-Kit is a Python-powered Command Line Interface (CLI) designed to automate the end-to-end research workflow for Density Functional Theory (DFT) calculations. Developed from over two years of experience optimizing Quantum ESPRESSO workflows, QE-Kit bridges the gap between initial structural discovery and publication-quality results.
 ---
 
 ## 🚀 Key Features
