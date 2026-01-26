@@ -31,4 +31,4 @@ QE-Kit is a Python-powered Command Line Interface (CLI) designed to automate the
 QE-Kit is best installed as a global tool using `pipx`:
 
 ```bash
-pipx install git+[https://github.com/FarhanNoor02/QE-Kit.git](https://github.com/FarhanNoor02/QE-Kit.git)
+pipx install git+https://github.com/FarhanNoor02/QE-Kit.git
