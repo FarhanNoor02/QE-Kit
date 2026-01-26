@@ -1,0 +1,66 @@
+QE-Kit Technical Documentation (v0.2.2)
+
+QE-Kit is a Python-based ecosystem designed to provide a structured, error-resistant interface for the Quantum ESPRESSO suite. It organizes the DFT workflow into three logical "Zones," handling everything from the initial crystal structure to the final derivation of optical constants.
+1. Zone 1: Pre-Processing (Discovery & Setup)
+
+Zone 1 focuses on preparing the physical model for simulation.
+
+    Structure to Input (100): Utilizes the Atomic Simulation Environment (ASE) to parse .cif, .xyz, or .pdb files. It handles the extraction of atomic positions and cell parameters, mapping them into the QE &SYSTEM namelist.
+
+    Pseudopotential Selection (101): Integrated with the QE-PotLib library. The module scans the user-defined pseudo directory, identifies available elements, and automatically assigns the correct .UPF files to the ATOMIC_SPECIES card.
+
+    K-Path Generation (102): Leverages Spglib and Seekpath to detect the crystal's Space Group and generate high-symmetry K-point paths required for Band Structure calculations.
+
+2. Zone 2: Input Generation (Simulation Engine)
+
+Zone 2 provides a parametric interface to generate input files for various QE executables (pw.x, ph.x, epsilon.x).
+Module	QE Executable	Function
+200: SCF	pw.x	Self-Consistent Field calculation for ground-state energy.
+201: VC-Relax	pw.x	Variable-cell structural optimization.
+202: NSCF	pw.x	Non-Self-Consistent Field for DOS/Bands (dense K-mesh).
+203: PDOS	projwfc.x	Setup for Projected Density of States analysis.
+205: Optical	epsilon.x	Calculation of the frequency-dependent dielectric tensor.
+206: Phonon	ph.x	Linear-response calculation for vibrational modes.
+3. Zone 3: Post-Processing (Analysis & Physics)
+
+This zone contains the "Physics Engines" that transform raw data into insights.
+300: Symmetry Refinement
+
+After a vc-relax calculation, the unit cell parameters and atomic positions often shift. This module parses the final coordinates and uses Spglib to find the refined symmetry. It automatically suggests the correct ibrav and celldm values for subsequent "Production" runs.
+302: PDOS Orbital Summation
+
+Quantum ESPRESSO's projwfc.x outputs individual files for every atom and orbital (e.g., Nb.pdos_atm#1(Nb)_wfc#2(d)).
+
+    Logic: The module automatically detects all .pdos_atm* files in the directory.
+
+    Aggregation: It sums the contributions based on the orbital character (s, p, d, f) and atom type, outputting clean, consolidated files ready for plotting.
+
+303: Optical Constants Derivation
+
+This module processes the output of epsilon.x (epsr_*.dat and epsi_*.dat).
+
+    Isotropic Averaging: For anisotropic materials, it calculates the average dielectric function: εavg​=(εx​+εy​+εz​)/3.
+
+    Constants Derivation: It applies the electromagnetic relations to compute the Real Refractive Index (n), Extinction Coefficient (k), Reflectivity (R), and Absorption Coefficient (α) in cm−1.
+
+    EELS Integration: It also processes Electron Energy Loss Spectroscopy (EELS) data if available.
+
+4. System Utilities (utils/)
+
+    config_manager.py: Manages the global configuration file (~/.qekit_config.json). It stores the path to the user's pseudopotential library so it doesn't need to be defined for every new project.
+
+    Terminal UI: Powered by questionary, providing a keyboard-accessible, styled menu with logical "Zone" separators and gold/green University of Dhaka branding.
+
+5. Directory Structure
+Plaintext
+
+QE-Kit/
+├── qekit.py           # Master CLI Entry point
+├── modules/           # Physics & Generation Logic
+│   ├── structure2in.py
+│   ├── optical_proc.py
+│   ├── pdos_proc.py
+│   └── ...
+├── utils/             # Infrastructure & Config
+│   └── config_manager.py
+└── pyproject.toml     # Package Metadata & Dependencies
