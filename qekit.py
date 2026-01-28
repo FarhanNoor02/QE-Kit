@@ -1,138 +1,171 @@
 import os
 import questionary  
 import sys
-from modules import structure2in, pseudo_select, kpath_gen, scf_gen,vcrelax_gen, nscf_gen
-from modules import pdos_gen, bands_gen, optical_gen, phonon_gen, optimized, phonon_proc, optical_proc
+from questionary import Style, Separator
+from modules import (
+    structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
+    nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
+    optimized, phonon_proc, optical_proc, pdos_proc
+)
 from utils import config_manager
 
+# --- Professional Terminal Styling ---
+# Using Green (Success), Gold (Headers), and Neon Yellow (Selections)
+custom_style = Style([
+    ('separator', 'fg:#ffcc00 bold'),       # Gold for Zone Headers
+    ('qmark', 'fg:#00ff00 bold'),          # Green for prompt markers
+    ('question', 'bold'),                  # Bold text for questions
+    ('pointer', 'fg:#00ff00 bold'),        # Green selection arrow
+    ('highlighted', 'fg:#00ff00 bold'),    # Green text when highlighted
+    ('selected', 'fg:#ccff00'),            # Yellow for selected text
+    ('instruction', 'fg:#888888 italic'),  # Grey for help text
+])
+
 def show_banner():
-    print("---------######----########----------##----###-----------------")
-    print("-------##-----##---##----------------##--###----***----##------")
-    print("-------##-----##---##----------------##--###----**-----##------")
-    print("-------##-----##---#######-----------##-##------##--######-----")
-    print("-------##-----##---##--------######--##--##-----##----##-------")
-    print("-------###----##---##----------------##---###---##----##-------")
-    print("---------######----########----------##-----##--##----###------")
-    print("------------####-----------------------------------------------")
-    print("--------=======By: Farhan Noor,University of Dhaka=======------")
-    print("---------------------------------------------------------------")
+    # os.system('clear' if os.name == 'posix' else 'cls') # Optional: Clear terminal on start
+    banner = r"""
+    ╔════════════════════════════════════════════════════════════════╗
+    ║   ____    _____      _      _____  _______                     ║
+    ║  / __ \  |____|     | |/ /  |_  _| |_  __|                     ║
+    ║ | |  | | | |__      | ' /    | |     | |                       ║
+    ║ | |  | | |  __| --  | <      | |     | |                       ║
+    ║ | |__| | | |___     | . \   _| |_    | |                       ║
+    ║  \ __\\  |_____|    |_|\_\ |_____|   |_|                       ║
+    ║ A Pre- & Post-Processing Suite for Quantum ESPRESSO            ║
+    ║   [ Build v0.3 ] | [ University of Dhaka ]                     ║
+    ║   [ Lead Dev: Farhan Noor ]                                    ║
+    ╚════════════════════════════════════════════════════════════════╝
+    """
+    print(banner)
 
 def pre_processing_menu():
     while True:
         choice = questionary.select(
-            "--- 1. Pre-Processing ---",
+            "--- ZONE 1: PRE-PROCESSING ---",
+            style=custom_style,
             choices=[
-                "100: Structure to Input",
-                "101: Pseudopotential Selection",
-                "102: K-Point Selection",
-                "Return to Main Menu"
+                "100: Structure to Input (CIF/XYZ)",
+                "101: Pseudopotential Selection (QE-PotLib)",
+                "102: K-Point Path Selection",
+                Separator(""),
+                "<- Return to Main Menu"
             ]
         ).ask()
 
-        if choice == "100: Structure to Input":
+        if choice == "100: Structure to Input (CIF/XYZ)":
             structure2in.run_structure2in()
-        elif choice == "101: Pseudopotential Selection":
+        elif choice == "101: Pseudopotential Selection (QE-PotLib)":
             pseudo_select.run_pseudo_select()
-        elif choice == "102: K-Point Selection":
+        elif choice == "102: K-Point Path Selection":
             kpath_gen.run_kpath_gen()
-        elif choice == "Return to Main Menu":
-            break # Exit the while loop to go back to main()
-
-# Updated sub-menu in qekit.py
+        elif choice == "<- Return to Main Menu":
+            break
 
 def input_generation_menu():
     while True:
         choice = questionary.select(
-            "--- 2. Input File Generation ---",
+            "--- ZONE 2: INPUT GENERATION ---",
+            style=custom_style,
             qmark="-->",
             choices=[
-                "200: SCF",
-                "201: VC-relax",
-                "202: NSCF",
-                "203: Density of States",
-                "204: Bands",
-                "205: Optical",
-                "206: Phonon",
-                "Return to Main Menu"
+                Separator(" [ Primary Calculations ] "),
+                "200: Self-Consistent Field (SCF)",
+                "201: Variable-Cell Relaxation (VC-relax)",
+                "202: Non-Self-Consistent Field (NSCF)",
+                Separator(" [ Property Calculations ] "),
+                "203: Density of States (DOS)",
+                "204: Band Structure",
+                "205: Optical Properties (Epsilon)",
+                "206: Phonon Calculations",
+                Separator(""),
+                "<- Return to Main Menu"
             ]
         ).ask()
         
-        if choice == "200: SCF":
+        if choice == "200: Self-Consistent Field (SCF)":
             scf_gen.run_scf_gen()
-        elif choice == "201: VC-relax":
+        elif choice == "201: Variable-Cell Relaxation (VC-relax)":
             vcrelax_gen.run_vcrelax_gen()
-        elif choice == "202: NSCF":
+        elif choice == "202: Non-Self-Consistent Field (NSCF)":
             nscf_gen.run_nscf_gen()
-        elif choice == "203: Density of States":
+        elif choice == "203: Density of States (DOS)":
             pdos_gen.run_pdos_gen()
-        elif choice == "204: Bands":
-            bands_gen.run_bands_gen() # To be written
-        elif choice == "205: Optical":
-            optical_gen.run_optical_gen() # To be written
-        elif choice == "206: Phonon":
+        elif choice == "204: Band Structure":
+            bands_gen.run_bands_gen()
+        elif choice == "205: Optical Properties (Epsilon)":
+            optical_gen.run_optical_gen()
+        elif choice == "206: Phonon Calculations":
             phonon_gen.run_phonon_gen()
-        elif choice == "Return to Main Menu":
+        elif choice == "<- Return to Main Menu":
             break
-        else:
-            print(f"\n[!] Module {choice.split(':')[0]} is currently in development.")
-            
+
 def post_processing_menu():
     while True:
         choice = questionary.select(
-            "--- 3. Post-Processing ---",
+            "--- ZONE 3: POST-PROCESSING & ANALYSIS ---",
+            style=custom_style,
             choices=[
-                "300: Optimized structure (Update scf.in)", # Update this text
-                "301: Phonon Dispersions (q2r & matdyn setup)",
-                "302: PDOS Summation (sumpdos.x)",
-                "303: Optical Properties (epsilon.x data)",
-                "Return to Main Menu"
+                Separator(" [ Symmetry & Structure ] "),
+                "300: Symmetry Refinement (cell2ibrav)",
+                Separator(" [ Electronic & Vibrational ] "),
+                "301: Phonon Dispersion Setup (q2r/matdyn)",
+                "302: PDOS Orbital Summation",
+                Separator(" [ Optoelectronics ] "),
+                "303: Optical Constants (n, k, R, alpha)",
+                Separator(""),
+                "<- Return to Main Menu"
             ]
         ).ask()
         
-        if choice == "300: Optimized structure (Update scf.in)":
-            optimized.run_300_structure_refinement() # Call the function
-        elif choice == "301: Phonon Dispersions (q2r & matdyn setup)":
+        if choice == "300: Symmetry Refinement (cell2ibrav)":
+            optimized.run_300_structure_refinement()
+        elif choice == "301: Phonon Dispersion Setup (q2r/matdyn)":
             phonon_proc.run_301_phonon_processing()
-        elif choice == "302: PDOS Summation (sumpdos.x)":
+        elif choice == "302: PDOS Orbital Summation":
             pdos_proc.run_302_pdos_summation()
-        elif choice == "303: Optical Properties (epsilon.x data)":
+        elif choice == "303: Optical Constants (n, k, R, alpha)":
             optical_proc.run_303_optical_processing()
-        elif choice == "Return to Main Menu":
+        elif choice == "<- Return to Main Menu":
             break
 
 def main():
     while True:
         show_banner()
         category = questionary.select(
-            "Select a Category:",
+            "RESEARCH WORKFLOW DASHBOARD",
+            style=custom_style,
             choices=[
-                "1. Pre-Processing",
+                Separator("  --- 🧪 ZONE 1: DISCOVERY & SETUP ---  "),
+                "1. Pre-Processing Suite",
+                Separator("  --- ⚙️ ZONE 2: SIMULATION ENGINE ---  "),
                 "2. Input File Generation",
-                "3. Post-Processing",
-                "4. Settings",  # Simplest choice string
-                "Exit"
+                Separator("  --- 📊 ZONE 3: ANALYSIS & PHYSICS --- "),
+                "3. Post-Processing Suite",
+                Separator("  --- 🛠️ SYSTEM --- "),
+                "4. Settings & Paths",
+                "Exit Application"
             ]
         ).ask()
 
-        if category == "1. Pre-Processing":
+        if category == "1. Pre-Processing Suite":
             pre_processing_menu()
         elif category == "2. Input File Generation":
             input_generation_menu()
-        elif category == "3. Post-Processing":
+        elif category == "3. Post-Processing Suite":
             post_processing_menu()
-        elif category == "4. Settings":  # Now matches the choice exactly
+        elif category == "4. Settings & Paths":
             current_path = config_manager.get_pseudo_dir()
-            print(f"\nCurrent Parent Pseudo Path: {current_path}")
+            print(f"\n[Current Pseudo Directory]: {current_path}")
             
             new_path = questionary.text("Enter new absolute path for PseudoPotentials:").ask()
             if new_path and os.path.isdir(new_path):
                 config_manager.save_pseudo_dir(new_path)
                 print("[+] Path updated successfully.")
             else:
-                print("[!] Invalid path. No changes made.")
-        elif category == "Exit":
-            print("\nExiting QE-Kit. Goodbye!")
+                print("[!] Invalid path or cancelled. No changes made.")
+        elif category == "Exit Application":
+            print("\nExiting QE-Kit. Happy Computing!")
             sys.exit()
+
 if __name__ == "__main__":
     main()
-           
