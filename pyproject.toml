@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qekit"
-version = "0.2.2"
+version = "0.3"
 description = "A comprehensive pre- and post-processing toolkit for Quantum ESPRESSO"
 readme = "README.md"
 authors = [{ name = "Farhan Noor", email = "s-2019418104@phy.du.ac.bd" }]
