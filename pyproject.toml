@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qekit"
-version = "0.3.1"
+
+version = "0.3.2"  # Bumped for the HT & Visualization update
 description = "A comprehensive pre- and post-processing toolkit for Quantum ESPRESSO"
 readme = "README.md"
 authors = [{ name = "Farhan Noor", email = "s-2019418104@phy.du.ac.bd" }]
@@ -17,15 +18,20 @@ dependencies = [
     "pandas",
     "spglib",
     "seekpath",
-    "ase"
+    "ase",
+    "matplotlib" # Recommended if you eventually transition from Gnuplot to Python plots
 ]
 
 [project.scripts]
-qekit = "qekit:main"  # This tells pipx to run the 'main' function inside qekit.py
+qekit = "qekit:main"
 
 [tool.setuptools]
-py-modules = ["qekit"]  # This tells setuptools that qekit.py is a top-level module
+py-modules = ["qekit"]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["modules*", "utils*"]
+
+# NEW: This ensures your .sh scripts in utils/ are actually bundled in the package
+[tool.setuptools.package-data]
+"utils" = ["*.sh"]

@@ -20,6 +20,10 @@ custom_style = Style([
     ('selected', 'fg:#ccff00'),            # Neon Yellow for final choice
     ('instruction', 'fg:#888888 italic'),  # Dim help text
 ])
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
 def show_banner():
     # os.system('clear' if os.name == 'posix' else 'cls') # Optional: Clear terminal on start
     banner = r"""
@@ -51,6 +55,7 @@ def pre_processing_menu():
             ]
         ).ask()
 
+<<<<<<< HEAD
         if choice == "100: Structure to Input":
             structure2in.run_structure2in()
         elif choice == "101: Pseudopotential Selection":
@@ -59,6 +64,12 @@ def pre_processing_menu():
             kpath_gen.run_kpath_gen()
         elif choice == "<- Return to Main Menu":
             break
+=======
+        if choice == "100: Structure to Input": structure2in.run_structure2in()
+        elif choice == "101: Pseudopotential Selection": pseudo_select.run_pseudo_select()
+        elif choice == "102: K-Point Path Generation": kpath_gen.run_kpath_gen()
+        elif choice == "<- Return to Main Menu": break
+>>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
 
 def input_generation_menu():
     while True:
@@ -66,6 +77,7 @@ def input_generation_menu():
             "--- ZONE 2 | INPUT FILE ARCHITECT ---",
             style=custom_style,
             choices=[
+<<<<<<< HEAD
                 "200: SCF Setup",
                 "201: VC-Relax Setup",
                 "202: NSCF Setup",
@@ -75,6 +87,11 @@ def input_generation_menu():
                 "206: Phonon Setup",
                 Separator(""),
                 "<- Return to Main Menu"
+=======
+                "200: SCF Setup", "201: VC-Relax Setup", "202: NSCF Setup",
+                "203: DOS/PDOS Setup", "204: Bands Setup", "205: Optical Setup",
+                "206: Phonon Setup", Separator(""), "<- Return to Main Menu"
+>>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
             ]
         ).ask()
         
@@ -93,12 +110,18 @@ def post_processing_menu():
             "--- ZONE 3 | PHYSICS & ANALYSIS ---",
             style=custom_style,
             choices=[
+<<<<<<< HEAD
                 "300: Refine Symmetry (cell2ibrav)",
                 "301: Phonon Dispersion Setup",
                 "302: PDOS Summation",
                 "303: Optical Constant Derivation",
                 Separator(""),
                 "<- Return to Main Menu"
+=======
+                "300: Refine Symmetry (cell2ibrav)", "301: Phonon Dispersion Setup",
+                "302: PDOS Summation", "303: Optical Constant Derivation",
+                Separator(""), "<- Return to Main Menu"
+>>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
             ]
         ).ask()
         
@@ -108,8 +131,10 @@ def post_processing_menu():
         elif "303" in choice: optical_proc.run_303_optical_processing()
         elif "<- Return to Main Menu" in choice: break
 
-def main():
+def automation_visualization_menu():
+    utils_dir = os.path.join(os.path.dirname(__file__), "utils")
     while True:
+<<<<<<< HEAD
         show_banner()
         category = questionary.select(
             "Main Menu » Select Workstream",
@@ -140,6 +165,62 @@ def main():
                 print("[+] Path updated successfully.")
             else:
                 print("[!] Invalid path or cancelled.")
+=======
+        choice = questionary.select(
+            "--- ZONE 4 | WORKFLOW & VISUALIZATION ---",
+            style=custom_style,
+            choices=[
+                "401: Run HT-Phonon Pipeline (Bash Driver)",
+                "402: Overlaid Plotter (Gnuplot)",
+                "403: Subplot/Spectral Plotter (Gnuplot)",
+                Separator(""),
+                "<- Return to Main Menu"
+            ]
+        ).ask()
+
+        if "401" in choice: os.system(f"bash {os.path.join(utils_dir, 'ht_phonon.sh')}")
+        elif "402" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-overlay.sh')}")
+        elif "403" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-subplots.sh')}")
+        elif "<- Return to Main Menu" in choice: break
+
+def main():
+    # --- Headless CLI Argument Handling ---
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+        if arg == "--300": optimized.run_300_structure_refinement()
+        elif arg == "--206": phonon_gen.run_phonon_gen(automated=True)
+        elif arg == "--301": phonon_proc.run_301_phonon_processing()
+        sys.exit(0)
+
+    while True:
+        show_banner()
+        category = questionary.select(
+            "Main Menu » Select Workstream",
+            style=custom_style,
+            choices=[
+                Separator("========================================="),
+                " ▶ ZONE 1 | Structural Discovery",
+                " ▶ ZONE 2 | Input File Architect",
+                " ▶ ZONE 3 | Physics & Analysis",
+                " ▶ ZONE 4 | Workflow & Visualization",
+                Separator("========================================="),
+                " ⚙ Settings",
+                " ✖ Exit Application"
+            ]
+        ).ask()
+
+        if "ZONE 1" in category: pre_processing_menu()
+        elif "ZONE 2" in category: input_generation_menu()
+        elif "ZONE 3" in category: post_processing_menu()
+        elif "ZONE 4" in category: automation_visualization_menu()
+        elif "Settings" in category:
+            current_path = config_manager.get_pseudo_dir()
+            print(f"\n[Current Pseudo Directory]: {current_path}")
+            new_path = questionary.text("Enter new absolute path:").ask()
+            if new_path and os.path.isdir(new_path):
+                config_manager.save_pseudo_dir(new_path)
+                print("[+] Path updated.")
+>>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
         elif "Exit" in category:
             print("\nExiting QE-Kit. Happy Computing!")
             sys.exit()
