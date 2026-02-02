@@ -20,10 +20,7 @@ custom_style = Style([
     ('selected', 'fg:#ccff00'),            # Neon Yellow for final choice
     ('instruction', 'fg:#888888 italic'),  # Dim help text
 ])
-<<<<<<< HEAD
-=======
 
->>>>>>> 1fa0a19 (Release v0.3.2: Implemented headless CLI, HT-Phonon driver, and Gnuplot visualization suite)
 def show_banner():
     # os.system('clear' if os.name == 'posix' else 'cls') # Optional: Clear terminal on start
     banner = r"""
