@@ -7,33 +7,32 @@ from modules import (
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
     optimized, phonon_proc, optical_proc, pdos_proc
 )
+
 from utils import config_manager
 
-# --- Professional Terminal Styling ---
-# Using Green (Success), Gold (Headers), and Neon Yellow (Selections)
+# --- Stylish Layout ---
 custom_style = Style([
-    ('separator', 'fg:#ffcc00 bold'),       # Gold for Zone Headers
+    ('separator', 'fg:#ffcc00 bold'),       # Gold for Zone Dividers
     ('qmark', 'fg:#00ff00 bold'),          # Green for prompt markers
     ('question', 'bold'),                  # Bold text for questions
     ('pointer', 'fg:#00ff00 bold'),        # Green selection arrow
     ('highlighted', 'fg:#00ff00 bold'),    # Green text when highlighted
-    ('selected', 'fg:#ccff00'),            # Yellow for selected text
-    ('instruction', 'fg:#888888 italic'),  # Grey for help text
+    ('selected', 'fg:#ccff00'),            # Neon Yellow for final choice
+    ('instruction', 'fg:#888888 italic'),  # Dim help text
 ])
-
 def show_banner():
     # os.system('clear' if os.name == 'posix' else 'cls') # Optional: Clear terminal on start
     banner = r"""
     ╔════════════════════════════════════════════════════════════════╗
-    ║   ____    _____      _      _____  _______                     ║
-    ║  / __ \  |____|     | |/ /  |_  _| |_  __|                     ║
-    ║ | |  | | | |__      | ' /    | |     | |                       ║
-    ║ | |  | | |  __| --  | <      | |     | |                       ║
-    ║ | |__| | | |___     | . \   _| |_    | |                       ║
-    ║  \ __\\  |_____|    |_|\_\ |_____|   |_|                       ║
+    ║   ____    _____      _      ______  _______                    ║
+    ║  / __ \  |____|     | |/ /  |_  _| |__  __|                    ║
+    ║ | |  | | | |__      | ' /    | |      | |                      ║
+    ║ | |  | | |  __| --  | <      | |      | |                      ║
+    ║ | |__| | | |___     | . \   _| |_     | |                      ║
+    ║  \ __\\  |_____|    |_|\_\ |_____|    |_|                      ║
     ║ A Pre- & Post-Processing Suite for Quantum ESPRESSO            ║
-    ║   [ Build v0.3 ] | [ University of Dhaka ]                     ║
-    ║   [ Lead Dev: Farhan Noor ]                                    ║
+    ║                                                                ║
+    ║ [ By: Farhan Noor, University of Dhaka ]                       ║
     ╚════════════════════════════════════════════════════════════════╝
     """
     print(banner)
@@ -41,22 +40,22 @@ def show_banner():
 def pre_processing_menu():
     while True:
         choice = questionary.select(
-            "--- ZONE 1: PRE-PROCESSING ---",
+            "--- ZONE 1 | STRUCTURAL DISCOVERY ---",
             style=custom_style,
             choices=[
-                "100: Structure to Input (CIF/XYZ)",
-                "101: Pseudopotential Selection (QE-PotLib)",
-                "102: K-Point Path Selection",
+                "100: Structure to Input",
+                "101: Pseudopotential Selection",
+                "102: K-Point Path Generation",
                 Separator(""),
                 "<- Return to Main Menu"
             ]
         ).ask()
 
-        if choice == "100: Structure to Input (CIF/XYZ)":
+        if choice == "100: Structure to Input":
             structure2in.run_structure2in()
-        elif choice == "101: Pseudopotential Selection (QE-PotLib)":
+        elif choice == "101: Pseudopotential Selection":
             pseudo_select.run_pseudo_select()
-        elif choice == "102: K-Point Path Selection":
+        elif choice == "102: K-Point Path Generation":
             kpath_gen.run_kpath_gen()
         elif choice == "<- Return to Main Menu":
             break
@@ -64,106 +63,84 @@ def pre_processing_menu():
 def input_generation_menu():
     while True:
         choice = questionary.select(
-            "--- ZONE 2: INPUT GENERATION ---",
+            "--- ZONE 2 | INPUT FILE ARCHITECT ---",
             style=custom_style,
-            qmark="-->",
             choices=[
-                Separator(" [ Primary Calculations ] "),
-                "200: Self-Consistent Field (SCF)",
-                "201: Variable-Cell Relaxation (VC-relax)",
-                "202: Non-Self-Consistent Field (NSCF)",
-                Separator(" [ Property Calculations ] "),
-                "203: Density of States (DOS)",
-                "204: Band Structure",
-                "205: Optical Properties (Epsilon)",
-                "206: Phonon Calculations",
+                "200: SCF Setup",
+                "201: VC-Relax Setup",
+                "202: NSCF Setup",
+                "203: DOS/PDOS Setup",
+                "204: Bands Setup",
+                "205: Optical Setup",
+                "206: Phonon Setup",
                 Separator(""),
                 "<- Return to Main Menu"
             ]
         ).ask()
         
-        if choice == "200: Self-Consistent Field (SCF)":
-            scf_gen.run_scf_gen()
-        elif choice == "201: Variable-Cell Relaxation (VC-relax)":
-            vcrelax_gen.run_vcrelax_gen()
-        elif choice == "202: Non-Self-Consistent Field (NSCF)":
-            nscf_gen.run_nscf_gen()
-        elif choice == "203: Density of States (DOS)":
-            pdos_gen.run_pdos_gen()
-        elif choice == "204: Band Structure":
-            bands_gen.run_bands_gen()
-        elif choice == "205: Optical Properties (Epsilon)":
-            optical_gen.run_optical_gen()
-        elif choice == "206: Phonon Calculations":
-            phonon_gen.run_phonon_gen()
-        elif choice == "<- Return to Main Menu":
-            break
+        if "200" in choice: scf_gen.run_scf_gen()
+        elif "201" in choice: vcrelax_gen.run_vcrelax_gen()
+        elif "202" in choice: nscf_gen.run_nscf_gen()
+        elif "203" in choice: pdos_gen.run_pdos_gen()
+        elif "204" in choice: bands_gen.run_bands_gen()
+        elif "205" in choice: optical_gen.run_optical_gen()
+        elif "206" in choice: phonon_gen.run_phonon_gen()
+        elif "<- Return to Main Menu" in choice: break
 
 def post_processing_menu():
     while True:
         choice = questionary.select(
-            "--- ZONE 3: POST-PROCESSING & ANALYSIS ---",
+            "--- ZONE 3 | PHYSICS & ANALYSIS ---",
             style=custom_style,
             choices=[
-                Separator(" [ Symmetry & Structure ] "),
-                "300: Symmetry Refinement (cell2ibrav)",
-                Separator(" [ Electronic & Vibrational ] "),
-                "301: Phonon Dispersion Setup (q2r/matdyn)",
-                "302: PDOS Orbital Summation",
-                Separator(" [ Optoelectronics ] "),
-                "303: Optical Constants (n, k, R, alpha)",
+                "300: Refine Symmetry (cell2ibrav)",
+                "301: Phonon Dispersion Setup",
+                "302: PDOS Summation",
+                "303: Optical Constant Derivation",
                 Separator(""),
                 "<- Return to Main Menu"
             ]
         ).ask()
         
-        if choice == "300: Symmetry Refinement (cell2ibrav)":
-            optimized.run_300_structure_refinement()
-        elif choice == "301: Phonon Dispersion Setup (q2r/matdyn)":
-            phonon_proc.run_301_phonon_processing()
-        elif choice == "302: PDOS Orbital Summation":
-            pdos_proc.run_302_pdos_summation()
-        elif choice == "303: Optical Constants (n, k, R, alpha)":
-            optical_proc.run_303_optical_processing()
-        elif choice == "<- Return to Main Menu":
-            break
+        if "300" in choice: optimized.run_300_structure_refinement()
+        elif "301" in choice: phonon_proc.run_301_phonon_processing()
+        elif "302" in choice: pdos_proc.run_302_pdos_summation()
+        elif "303" in choice: optical_proc.run_303_optical_processing()
+        elif "<- Return to Main Menu" in choice: break
 
 def main():
     while True:
         show_banner()
         category = questionary.select(
-            "RESEARCH WORKFLOW DASHBOARD",
+            "Main Menu » Select Workstream",
             style=custom_style,
             choices=[
-                Separator("  --- 🧪 ZONE 1: DISCOVERY & SETUP ---  "),
-                "1. Pre-Processing Suite",
-                Separator("  --- ⚙️ ZONE 2: SIMULATION ENGINE ---  "),
-                "2. Input File Generation",
-                Separator("  --- 📊 ZONE 3: ANALYSIS & PHYSICS --- "),
-                "3. Post-Processing Suite",
-                Separator("  --- 🛠️ SYSTEM --- "),
-                "4. Settings & Paths",
-                "Exit Application"
+                Separator("========================================="),
+                " ▶ ZONE 1 | Structural Discovery",
+                " ▶ ZONE 2 | Input File Architect",
+                " ▶ ZONE 3 | Physics & Analysis",
+                Separator("========================================="),
+                " ⚙ Settings",
+                " ✖ Exit Application"
             ]
         ).ask()
 
-        if category == "1. Pre-Processing Suite":
+        if "ZONE 1" in category:
             pre_processing_menu()
-        elif category == "2. Input File Generation":
+        elif "ZONE 2" in category:
             input_generation_menu()
-        elif category == "3. Post-Processing Suite":
+        elif "ZONE 3" in category:
             post_processing_menu()
-        elif category == "4. Settings & Paths":
+        elif "Settings" in category:
             current_path = config_manager.get_pseudo_dir()
             print(f"\n[Current Pseudo Directory]: {current_path}")
-            
             new_path = questionary.text("Enter new absolute path for PseudoPotentials:").ask()
             if new_path and os.path.isdir(new_path):
                 config_manager.save_pseudo_dir(new_path)
                 print("[+] Path updated successfully.")
             else:
-                print("[!] Invalid path or cancelled. No changes made.")
-        elif category == "Exit Application":
+                print("[!] Invalid path or cancelled.")
+        elif "Exit" in category:
             print("\nExiting QE-Kit. Happy Computing!")
             sys.exit()
 
