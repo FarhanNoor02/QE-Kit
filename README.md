@@ -53,14 +53,16 @@ QE-Kit is best installed as a global tool using `pipx` to maintain an isolated e
 ```bash
 # Install directly from the repository
 pipx install git+[https://github.com/FarhanNoor02/QE-Kit.git](https://github.com/FarhanNoor02/QE-Kit.git)
-
+```
 ## System Requirements
 
-    Python: 3.8 or higher.
+    * Python: 3.8 or higher.
 
-    Quantum ESPRESSO: Core binaries (pw.x, ph.x, epsilon.x, etc.) should be in your PATH.
+    * Quantum ESPRESSO: Core binaries (pw.x, ph.x, epsilon.x, etc.) should be in your PATH.
 
-    Gnuplot: Required for the visualization suite in Zone 4.
+    * QE-Potcar library: https://github.com/FarhanNoor02/QEPotcar; the pseudopotential library is created via web scraping and it colects and organises all the pseudopotentials used in QE. Path to this library is to be given during installation.
+
+    * Gnuplot: Required for the visualization suite in Zone 4.
 
 ## 📖 Usage
 Interactive Mode
@@ -70,9 +72,8 @@ Simply type the command to launch the stylish CLI menu:
 ``` bash
 
 qekit
-
-Headless/Automation Mode
-
+```
+### Headless/Automation Mode
 For use in HPC scripts or remote clusters, use command flags:
 Bash
 
@@ -90,5 +91,9 @@ qekit --206     # Generate phonon inputs automatically
 
     Upcoming: Electron-Phonon suite for EPW code connectivity.
 
-# To upgrade to the latest version (v0.3.4)
+## To upgrade to the latest version (v0.3.4)
+```bash
 pipx upgrade qekit
+```
+##CITATION:
+Farhan Noor, F. QE-Kit [Computer software]. https://github.com/FarhanNoor02/QE-Kit
