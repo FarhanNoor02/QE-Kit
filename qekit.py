@@ -117,33 +117,25 @@ def automation_visualization_menu():
         elif "<- Return to Main Menu" in choice: break
 
 def main():
-
-
-    if len(sys.argv) > 1:
-
-     if len(sys.argv) > 1:
-
     # --- Headless CLI & Help Handling ---
     if len(sys.argv) > 1:
         arg = sys.argv[1]
         
         if arg in ["--help", "-h"]:
             help_manager.display_help()
-            
         elif arg == "--300": 
             optimized.run_300_structure_refinement()
         elif arg == "--206": 
             phonon_gen.run_phonon_gen(automated=True)
         elif arg == "--301": 
             phonon_proc.run_301_phonon_processing()
-        
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
             
         sys.exit(0)
 
-    # --- Interactive Menu (OUTSIDE the if block) ---
+    # --- Interactive Menu ---
     while True:
         show_banner()
         category = questionary.select(
@@ -175,6 +167,6 @@ def main():
         elif "Exit" in category:
             print("\nExiting QE-Kit. Happy Computing!")
             sys.exit()
-            
+
 if __name__ == "__main__":
     main()
