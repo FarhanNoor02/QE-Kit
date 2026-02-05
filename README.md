@@ -56,13 +56,14 @@ pipx install git+[https://github.com/FarhanNoor02/QE-Kit.git](https://github.com
 ```
 ## System Requirements
 
-    * Python: 3.8 or higher.
+    1. Python: 3.8 or higher.
 
-    * Quantum ESPRESSO: Core binaries (pw.x, ph.x, epsilon.x, etc.) should be in your PATH.
+    2. Quantum ESPRESSO: Core binaries (pw.x, ph.x, epsilon.x, etc.) should be in your PATH.
 
-    * QE-Potcar library: https://github.com/FarhanNoor02/QEPotcar; the pseudopotential library is created via web scraping and it colects and organises all the pseudopotentials used in QE. Path to this library is to be given during installation.
+    3. QE-Potcar library: https://github.com/FarhanNoor02/QEPotcar; the pseudopotential library is created via web scraping and 
+       it colects and organises all the pseudopotentials used in QE. Path to this library is to be given during installation.
 
-    * Gnuplot: Required for the visualization suite in Zone 4.
+    4. Gnuplot: Required for the visualization suite in Zone 4.
 
 ## 📖 Usage
 Interactive Mode
@@ -85,15 +86,15 @@ qekit --206     # Generate phonon inputs automatically
 
     v0.4.0: 
 
-    Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
+    1. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
 
-    Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
+    2. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
 
-    Upcoming: Electron-Phonon suite for EPW code connectivity.
+    3. Upcoming: Electron-Phonon suite for EPW code connectivity.
 
 ## To upgrade to the latest version (v0.3.4)
 ```bash
 pipx upgrade qekit
 ```
-##CITATION:
+## CITATION:
 Farhan Noor, F. QE-Kit [Computer software]. https://github.com/FarhanNoor02/QE-Kit
