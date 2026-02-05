@@ -118,15 +118,18 @@ def automation_visualization_menu():
 
 def main():
 
+
     if len(sys.argv) > 1:
 
      if len(sys.argv) > 1:
+
+    # --- Headless CLI & Help Handling ---
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
         
-        # Trigger help manager
         if arg in ["--help", "-h"]:
             help_manager.display_help()
             
-        # Existing headless logic
         elif arg == "--300": 
             optimized.run_300_structure_refinement()
         elif arg == "--206": 
@@ -134,12 +137,13 @@ def main():
         elif arg == "--301": 
             phonon_proc.run_301_phonon_processing()
         
-        # If an unknown flag is passed, show help anyway
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
             
         sys.exit(0)
+
+    # --- Interactive Menu (OUTSIDE the if block) ---
     while True:
         show_banner()
         category = questionary.select(
@@ -171,6 +175,6 @@ def main():
         elif "Exit" in category:
             print("\nExiting QE-Kit. Happy Computing!")
             sys.exit()
-
+            
 if __name__ == "__main__":
     main()
