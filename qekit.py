@@ -8,7 +8,7 @@ from modules import (
     optimized, phonon_proc, optical_proc, pdos_proc
 )
 
-from utils import config_manager
+from utils import config_manager, help_manager
 
 # --- Stylish Layout ---
 custom_style = Style([
@@ -117,13 +117,29 @@ def automation_visualization_menu():
         elif "<- Return to Main Menu" in choice: break
 
 def main():
-    if len(sys.argv) > 1:
-        arg = sys.argv[1]
-        if arg == "--300": optimized.run_300_structure_refinement()
-        elif arg == "--206": phonon_gen.run_phonon_gen(automated=True)
-        elif arg == "--301": phonon_proc.run_301_phonon_processing()
-        sys.exit(0)
 
+    if len(sys.argv) > 1:
+
+     if len(sys.argv) > 1:
+        
+        # Trigger help manager
+        if arg in ["--help", "-h"]:
+            help_manager.display_help()
+            
+        # Existing headless logic
+        elif arg == "--300": 
+            optimized.run_300_structure_refinement()
+        elif arg == "--206": 
+            phonon_gen.run_phonon_gen(automated=True)
+        elif arg == "--301": 
+            phonon_proc.run_301_phonon_processing()
+        
+        # If an unknown flag is passed, show help anyway
+        else:
+            print(f"[!] Unknown argument: {arg}")
+            help_manager.display_help()
+            
+        sys.exit(0)
     while True:
         show_banner()
         category = questionary.select(
