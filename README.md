@@ -3,7 +3,7 @@
 
 **Author:** Farhan Noor  
 **Affiliation:** Department of Physics, University of Dhaka  
-**Status:** Active Development (v0.3.4)
+**Status:** Active Development
 
 QE-Kit is a Python-powered Command Line Interface (CLI) designed to automate the end-to-end research workflow for Density Functional Theory (DFT) calculations. Developed from over two years of experience optimizing Quantum ESPRESSO workflows, QE-Kit bridges the gap between initial structural discovery and publication-quality results.
 
