@@ -8,16 +8,22 @@ def parse_a2fdos_file(filepath):
     data = []
     with open(filepath, 'r') as f:
         for line in f:
-            if line.startswith('#'):
+            # Strip leading spaces to properly catch the '#' comment lines
+            if line.strip().startswith('#'):
                 continue
+            
             parts = line.split()
             if not parts:
                 continue
+                
             try:
+                # Check if the line contains numeric data
                 float(parts[0])
                 data.append([float(x) for x in parts])
             except ValueError:
+                # Safely break when hitting the "lambda = ..." footer
                 break
+                
     return np.array(data)
 
 def run_304_epc_processor():
@@ -55,7 +61,7 @@ def run_304_epc_processor():
         omega_ry = data[:, 0]
         a2f = data[:, 1]
         
-        # Avoid division by zero at omega = 0
+        # Avoid division by zero at omega = 0 by filtering out near-zero frequencies
         valid_idx = omega_ry > 1e-6
         w_ry = omega_ry[valid_idx]
         a2f_val = a2f[valid_idx]
@@ -97,3 +103,7 @@ def run_304_epc_processor():
 
     print("="*85)
     print("[+] Frequency-dependent λ(ω) exported as .dat files for Zone 4 plotting.\n")
+
+if __name__ == "__main__":
+    # Optional: allows the script to be run directly for testing
+    run_304_epc_processor()
