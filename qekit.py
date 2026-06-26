@@ -5,7 +5,7 @@ from questionary import Style, Separator
 from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
-    optimized, phonon_proc, optical_proc, pdos_proc
+    optimized, phonon_proc, optical_proc, pdos_proc, bz_plotter, xrd_plotter
 )
 
 from utils import config_manager, help_manager
@@ -106,6 +106,8 @@ def automation_visualization_menu():
                 "401: Run HT-Phonon Pipeline (Bash Driver)",
                 "402: Overlaid Plotter (Gnuplot)",
                 "403: Subplot/Spectral Plotter (Gnuplot)",
+                "404: Interactive Brillouin Zone Visualizer (Matplotlib)", #NEW
+                "405: Calculated XRD Pattern Plotter (Pymatgen)",
                 Separator(""),
                 "<- Return to Main Menu"
             ]
@@ -114,6 +116,8 @@ def automation_visualization_menu():
         if "401" in choice: os.system(f"bash {os.path.join(utils_dir, 'ht_phonon.sh')}")
         elif "402" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-overlay.sh')}")
         elif "403" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-subplots.sh')}")
+        elif "404" in choice: bz_plotter.run_404_bz_plotter() # <-- NEW
+        elif "405" in choice: xrd_plotter.run_405_xrd_plotter()
         elif "<- Return to Main Menu" in choice: break
 
 def main():
@@ -129,6 +133,10 @@ def main():
             phonon_gen.run_phonon_gen(automated=True)
         elif arg == "--301": 
             phonon_proc.run_301_phonon_processing()
+        elif arg == "--404": 
+            bz_plotter.run_404_bz_plotter() # <-- NEW
+        elif arg == "--405":
+            xrd_plotter.run_405_xrd_plotter()
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
