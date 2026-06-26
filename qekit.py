@@ -5,7 +5,7 @@ from questionary import Style, Separator
 from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
-    optimized, phonon_proc, optical_proc, pdos_proc
+    optimized, phonon_proc, optical_proc, pdos_proc, epc_processor
 )
 
 from utils import config_manager, help_manager, bz_plotter, xrd_plotter
@@ -94,6 +94,7 @@ def post_processing_menu():
         elif "301" in choice: phonon_proc.run_301_phonon_processing()
         elif "302" in choice: pdos_proc.run_302_pdos_summation()
         elif "303" in choice: optical_proc.run_303_optical_processing()
+        elif "304" in choice: epc_processor.run_304_epc_processor()
         elif "<- Return to Main Menu" in choice: break
 
 def automation_visualization_menu():
@@ -133,6 +134,8 @@ def main():
             phonon_gen.run_phonon_gen(automated=True)
         elif arg == "--301": 
             phonon_proc.run_301_phonon_processing()
+        elif arg == "--304": 
+            epc_processor.run_304_epc_processor()
         elif arg == "--404": 
             bz_plotter.run_404_bz_plotter() # <-- NEW
         elif arg == "--405":
