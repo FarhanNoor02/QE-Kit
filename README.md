@@ -1,4 +1,4 @@
-# QE-Kit (v0.3.5) 
+# QE-Kit
 ### A Pre- & Post-Processing Suite for Quantum ESPRESSO
 
 **Author:** Farhan Noor  
@@ -85,13 +85,14 @@ qekit --206     # Generate phonon inputs automatically
 
 ## 📈 Roadmap
 
-    v0.4.0: 
+    
+    1. New plotting capabilities for publication-quality plots
+    
+    2. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
 
-    1. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
+    3. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
 
-    2. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
-
-    3. Upcoming: Electron-Phonon suite for EPW code connectivity.
+    4. Upcoming: Electron-Phonon suite for EPW code connectivity.
 
 ## To upgrade to the latest version (v0.3.4)
 ```bash
