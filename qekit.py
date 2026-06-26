@@ -85,7 +85,7 @@ def post_processing_menu():
             style=custom_style,
             choices=[
                 "300: Refine Symmetry (cell2ibrav)", "301: Phonon Dispersion Setup",
-                "302: PDOS Summation", "303: Optical Constant Derivation",
+                "302: PDOS Summation", "303: Optical Constant Derivation", "304: e-ph analysis",
                 Separator(""), "<- Return to Main Menu"
             ]
         ).ask()
