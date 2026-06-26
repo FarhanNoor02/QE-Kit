@@ -1,4 +1,4 @@
-# QE-Kit (v0.3.4) 
+# QE-Kit (v0.3.5) 
 ### A Pre- & Post-Processing Suite for Quantum ESPRESSO
 
 **Author:** Farhan Noor  
@@ -40,9 +40,10 @@ The "Brain" of the suite, where raw data is converted into physical insights.
 ### ⚡ Zone 4: Workflow & Visualization
 The automation and plotting layer for high-throughput research.
 * **HT-Phonon Driver:** A supervised Bash pipeline (`ht_phonon.sh`) that orchestrates the entire phonon workflow—from structural input to final dispersion—without manual intervention.
-* **Gnuplot Visualization Suite:**
+* **Visualization Suite:**
     * `plot-overlay.sh`: Overlays different data sets (e.g., Spin-up vs Spin-down or Total DOS vs PDOS).
     * `plot-subplots.sh`: Multi-pane vertical stacking for optical spectra to ensure scale-independent analysis across different physical constants.
+    * `bz_plotter.py` & `xrd_plotter.py`: plot the X-ray diffraction pattern and the Brillouin Zone directly from the structure file (.cif)
 
 ---
 
