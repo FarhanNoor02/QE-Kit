@@ -5,10 +5,10 @@ from questionary import Style, Separator
 from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
-    optimized, phonon_proc, optical_proc, pdos_proc, bz_plotter, xrd_plotter
+    optimized, phonon_proc, optical_proc, pdos_proc
 )
 
-from utils import config_manager, help_manager
+from utils import config_manager, help_manager, bz_plotter, xrd_plotter
 
 # --- Stylish Layout ---
 custom_style = Style([
