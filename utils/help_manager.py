@@ -25,17 +25,21 @@ ZONE 2: INPUT ARCHITECT
     --200 : Generate SCF input files. Users will specify the ecutwfc and ecutrho 
             thresholds, read directly from the pseudopotential files.
     --206 : Generate Phonon (ph.in) input files (Automated).
+    --207: Zone 2: Generate fs.in for Fermi surface extraction from NSCF output.
+    --208: Zone 2: Generate thermo_control for elastic/thermodynamic properties.
 
-ZONE 3: PHYSICS & ANALYSIS
+ZONE 3: POST-PROCESSOR
     --300 : Symmetry refinement (Updates scf.in with optimized lattice).
     --301 : Phonon post-processing (Automated). Generates files for use with 
             q2r.x, matdyn.x, and plotband.x.
     --303 : Isotropic optical constant derivation (n, k, R, alpha).
+    --305: Thermo_PW result extraction
 
-ZONE 4: WORKFLOW & VISUALIZATION
+ZONE 4: DATA VISUALIZATION
     --401 : Run HT-Phonon Pipeline (Bash Driver).
     --404 : Interactive Brillouin Zone Visualizer (Matplotlib).
     --405 : Calculated XRD Pattern Plotter (Pymatgen).
+    --406 : 3D Fermi Surface Visualizer (scikit-image)
 
 DOCUMENTATION & SUPPORT:
     GitHub: https://github.com/FarhanNoor02/QE-Kit
