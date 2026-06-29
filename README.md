@@ -94,7 +94,7 @@ qekit --206     # Generate phonon inputs automatically
 
     4. Upcoming: Electron-Phonon suite for EPW code connectivity.
 
-## To upgrade to the latest version (v0.3.4)
+## To upgrade to the latest version
 ```bash
 pipx upgrade qekit
 ```
