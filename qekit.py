@@ -8,7 +8,9 @@ from modules import (
     optimized, phonon_proc, optical_proc, pdos_proc, epc_processor
 )
 
-from utils import config_manager, help_manager, bz_plotter, xrd_plotter
+from utils import (
+    config_manager, help_manager, bz_plotter, xrd_plotter, fs_plotter
+) 
 
 # --- Stylish Layout ---
 custom_style = Style([
@@ -65,7 +67,10 @@ def input_generation_menu():
             choices=[
                 "200: SCF Setup", "201: VC-Relax Setup", "202: NSCF Setup",
                 "203: DOS/PDOS Setup", "204: Bands Setup", "205: Optical Setup",
-                "206: Phonon Setup", Separator(""), "<- Return to Main Menu"
+                "206: Phonon Setup", 
+                "207: Fermi Surface Setup (fs.x)",
+                "208: Thermo_PW Setup (elastic/thermo)",
+                Separator(""), "<- Return to Main Menu"
             ]
         ).ask()
         
@@ -76,16 +81,19 @@ def input_generation_menu():
         elif "204" in choice: bands_gen.run_bands_gen()
         elif "205" in choice: optical_gen.run_optical_gen()
         elif "206" in choice: phonon_gen.run_phonon_gen()
+        elif "207" in choice: fs_gen.run_207_fs_gen()
+        elif "208" in choice: thermopw_gen.run_208_thermopw_gen()
         elif "<- Return to Main Menu" in choice: break
 
 def post_processing_menu():
     while True:
         choice = questionary.select(
-            "--- ZONE 3 | PHYSICS & ANALYSIS ---",
+            "--- ZONE 3 | POST-PROCESSING ---",
             style=custom_style,
             choices=[
                 "300: Refine Symmetry (cell2ibrav)", "301: Phonon Dispersion Setup",
                 "302: PDOS Summation", "303: Optical Constant Derivation", "304: e-ph analysis",
+                "305: Thermo_PW Analysis",
                 Separator(""), "<- Return to Main Menu"
             ]
         ).ask()
@@ -95,13 +103,14 @@ def post_processing_menu():
         elif "302" in choice: pdos_proc.run_302_pdos_summation()
         elif "303" in choice: optical_proc.run_303_optical_processing()
         elif "304" in choice: epc_processor.run_304_epc_processor()
+        elif "305" in choice: thermopw_proc.run_305_thermopw_proc()
         elif "<- Return to Main Menu" in choice: break
 
 def automation_visualization_menu():
     utils_dir = os.path.join(os.path.dirname(__file__), "utils")
     while True:
         choice = questionary.select(
-            "--- ZONE 4 | WORKFLOW & VISUALIZATION ---",
+            "--- ZONE 4 | DATA VISUALIZATION ---",
             style=custom_style,
             choices=[
                 "401: Run HT-Phonon Pipeline (Bash Driver)",
@@ -109,7 +118,7 @@ def automation_visualization_menu():
                 "403: Subplot/Spectral Plotter (Gnuplot)",
                 "404: Interactive Brillouin Zone Visualizer (Matplotlib)", #NEW
                 "405: Calculated XRD Pattern Plotter (Pymatgen)",
-                Separator(""),
+                 Separator(""),
                 "<- Return to Main Menu"
             ]
         ).ask()
@@ -140,6 +149,8 @@ def main():
             bz_plotter.run_404_bz_plotter() # <-- NEW
         elif arg == "--405":
             xrd_plotter.run_405_xrd_plotter()
+        elif arg == "--406": 
+            fs_plotter.run_406_fs_plotter()
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
@@ -156,8 +167,8 @@ def main():
                 Separator("========================================="),
                 " ▶ ZONE 1 | Structural Discovery",
                 " ▶ ZONE 2 | Input File Architect",
-                " ▶ ZONE 3 | Physics & Analysis",
-                " ▶ ZONE 4 | Workflow & Visualization",
+                " ▶ ZONE 3 | Post-Processor",
+                " ▶ ZONE 4 | Visualization",
                 Separator("========================================="),
                 " ⚙ Settings",
                 " ✖ Exit Application"
