@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qekit"
 
-version = "0.3.9"
+version = "0.3.10"
 description = "A comprehensive pre- and post-processing toolkit for Quantum ESPRESSO"
 readme = "README.md"
 authors = [{ name = "Farhan Noor", email = "s-2019418104@phy.du.ac.bd" }]
@@ -16,10 +16,13 @@ dependencies = [
     "questionary",
     "numpy",
     "pandas",
+    "scipy",
     "spglib",
     "seekpath",
     "ase",
-    "matplotlib" # Recommended if you eventually transition from Gnuplot to Python plots
+    "matplotlib",
+    "pymatgen",
+    "scikit-image"
 ]
 
 [project.scripts]
