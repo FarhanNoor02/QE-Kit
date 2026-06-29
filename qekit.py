@@ -5,11 +5,13 @@ from questionary import Style, Separator
 from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
-    optimized, phonon_proc, optical_proc, pdos_proc, epc_processor
+    optimized, phonon_proc, optical_proc, pdos_proc, epc_processor,
+    thermopw_gen, thermopw_proc
 )
 
 from utils import (
-    config_manager, help_manager, bz_plotter, xrd_plotter, fs_plotter
+    config_manager, help_manager, bz_plotter, xrd_plotter,
+    check_strain, symmetric_mat
 ) 
 
 # --- Stylish Layout ---
@@ -149,8 +151,7 @@ def main():
             bz_plotter.run_404_bz_plotter() # <-- NEW
         elif arg == "--405":
             xrd_plotter.run_405_xrd_plotter()
-        elif arg == "--406": 
-            fs_plotter.run_406_fs_plotter()
+        
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
