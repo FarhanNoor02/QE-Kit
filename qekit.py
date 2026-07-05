@@ -7,7 +7,7 @@ from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
     optimized, phonon_proc, optical_proc, pdos_proc, epc_processor,
-    thermopw_gen, thermopw_proc, fs_gen
+    thermopw_gen, thermopw_proc, fs_gen, build_pseudo_lib
 )
 
 from utils import (
@@ -189,12 +189,36 @@ def main():
         elif "ZONE 3" in category: post_processing_menu()
         elif "ZONE 4" in category: automation_visualization_menu()
         elif "Settings" in category:
-            current_path = config_manager.get_pseudo_dir()
-            print(f"\n[Current Pseudo Directory]: {current_path}")
-            new_path = questionary.text("Enter new absolute path:").ask()
-            if new_path and os.path.isdir(new_path):
-                config_manager.save_pseudo_dir(new_path)
-                print("[+] Path updated.")
+            while True:
+                current_path = config_manager.get_pseudo_dir() or "Not Set"
+                print(f"\n[Current Pseudo Directory]: {current_path}")
+                
+                setting_choice = questionary.select(
+                    "Settings Menu",
+                    style=custom_style,
+                    choices=[
+                        "1: Manually Link Existing Library Path",
+                        "2: Build/Download New Global Library (Internet Required)",
+                        Separator(""),
+                        "<- Back to Main Menu"
+                    ]
+                ).ask()
+                
+                if "1:" in setting_choice:
+                    new_path = questionary.text("Enter absolute path to your existing library:").ask()
+                    if new_path and os.path.isdir(new_path):
+                        config_manager.save_pseudo_dir(new_path)
+                        print("[+] Path updated successfully.")
+                    else:
+                        print("[!] Invalid path or directory does not exist.")
+                        
+                elif "2:" in setting_choice:
+                    build_pseudo_lib.build_library()
+                    
+                elif "<-" in setting_choice:
+                    # Clear screen to keep the UI clean when returning to Mainmenu
+                    os.system('clear' if os.name == 'posix' else 'cls')
+                    break
         elif "Exit" in category:
             # Clears the screen one last time before exiting cleanly
             os.system('clear' if os.name == 'posix' else 'cls')
