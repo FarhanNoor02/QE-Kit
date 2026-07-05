@@ -1,100 +1,93 @@
-# QE-Kit
-### A Pre- & Post-Processing Suite for Quantum ESPRESSO
+# ⚛️ QE-Kit
 
-**Author:** Farhan Noor  
-**Affiliation:** Department of Physics, University of Dhaka  
-**Status:** Active Development
+**A Pre- & Post-Processing Suite for Quantum ESPRESSO**
+*Developed by: Farhan Noor, University of Dhaka*
 
-QE-Kit is a Python-powered Command Line Interface (CLI) designed to automate the end-to-end research workflow for Density Functional Theory (DFT) calculations. Developed from over two years of experience optimizing Quantum ESPRESSO workflows, QE-Kit bridges the gap between initial structural discovery and publication-quality results.
+QE-Kit is a comprehensive, modular Python and Bash toolkit designed to automate the workflow of Density Functional Theory (DFT) calculations using Quantum ESPRESSO. It bridges the gap between raw crystallographic data and publication-ready physical properties, featuring an interactive CLI, smart pseudopotential management, and robust XML-based calculation state verification.
 
 ---
 
-## 🚀 Architectural Overview
+## 🚀 Features
 
-QE-Kit is organized into four distinct **Zones**, representing the logical progression of a materials science research project.
-
-
-
-### 🌐 Zone 1: Structural Discovery
-Focuses on the transition from experimental crystallography to computational models.
-* **Module 100 (Structure to Input):** Robust conversion of `.cif` or `.xyz` files into standard `pw.x` input templates using `ASE`. 
-* **Module 101 (Pseudo-Selector):** Interactive selection from your local pseudopotential library. Includes a **Kinetic Energy Advisor** that parses potential files to suggest optimized cutoffs.
-* **Module 102 (K-Path Generation):** Utilizes `SeeK-path` to automatically detect high-symmetry points in the Brillouin zone for standardized band structure plots.
-
-### 🏗️ Zone 2: Input File Architect
-Rapidly generates specialized input files with optimized defaults for the Quantum ESPRESSO suite.
-* **200 - 202 (Electronic Core):** Streamlined setup for SCF, VC-Relax, and NSCF calculations.
-* **203 - 204 (Property Mapping):** Templates for Density of States (DOS/PDOS) and Band Structure.
-* **205 (Optical Suite):** Specific setup for `epsilon.x` to study complex dielectric responses.
-* **206 (Phonon Suite):** Automated generation of `ph.in` for lattice dynamics and vibrational analysis.
-
-### 🧪 Zone 3: Physics & Analysis
-The "Brain" of the suite, where raw data is converted into physical insights.
-* **Module 300 (Refine Symmetry):** A critical post-relaxation tool. It parses `vc-relax.out`, refines the cell using `Spglib`, and updates the `scf.in` with the exact `ibrav` and atomic coordinates.
-* **Module 301 (Phonon Dispersion):** Automates the post-processing of dynamical matrices into a readable dispersion format.
-* **Module 302 (PDOS Summation):** Sums orbital-wise contributions (e.g., total $d$-orbital contribution for a transition metal) from multiple `.pdos_atm` files.
-* **Module 303 (Optical Constant Derivation):** Calculates isotropic averaged refractive index ($n$), extinction coefficient ($k$), reflectivity ($R$), and absorption ($\alpha$) from raw dielectric function tensors.
-
-
-
-### ⚡ Zone 4: Workflow & Visualization
-The automation and plotting layer for high-throughput research.
-* **HT-Phonon Driver:** A supervised Bash pipeline (`ht_phonon.sh`) that orchestrates the entire phonon workflow—from structural input to final dispersion—without manual intervention.
-* **Visualization Suite:**
-    * `plot-overlay.sh`: Overlays different data sets (e.g., Spin-up vs Spin-down or Total DOS vs PDOS).
-    * `plot-subplots.sh`: Multi-pane vertical stacking for optical spectra to ensure scale-independent analysis across different physical constants.
-    * `bz_plotter.py` & `xrd_plotter.py`: plot the X-ray diffraction pattern and the Brillouin Zone directly from the structure file (.cif)
+- **Interactive & Headless Modes:** Navigate via a beautiful, interactive CLI using `questionary`, or run modules headlessly in HPC batch scripts (e.g., `./qekit.py --305`).
+- **State-Aware Generation:** Modules parse QE XML schemas to ensure prerequisite calculations were successful before generating downstream inputs.
+- **Smart Pseudopotential Linking:** Automatically detects local `.UPF` files or fetches them from your global library based on strict element mapping.
+- **Advanced Workflows:** Built-in support for standard DFT, Electron-Phonon Coupling (EPC) for superconductivity, and thermodynamic/elastic property extraction via `thermo_pw`.
 
 ---
 
-## 🛠 Installation
+## 📂 Architecture & Modules
 
-QE-Kit is best installed as a global tool using `pipx` to maintain an isolated environment:
+The suite is divided into four primary "Zones" and a foundational "Utils" layer.
 
+### 🟢 ZONE 1 | Structural Discovery (Pre-Processing)
+*Focuses on preparing the initial crystalline structure and matching it with correct pseudopotentials.*
+
+*   **`100: structure2in`**: Converts raw crystallographic data (like `.cif` files) into a foundational `scf.dat` template. Defines the `ibrav`, `CELL_PARAMETERS`, `ATOMIC_SPECIES`, and `ATOMIC_POSITIONS` blocks.
+*   **`101: pseudo_select`**: A "smart" pseudopotential linker. Reads `scf.dat` and checks if required `.UPF` files exist locally. If found, it natively assigns `pseudo_dir='./'`. If missing, it prompts the user to select functional/relativistic options from the global `QE-POTCAR` library, rigorously maps filenames to elements, and injects the absolute path.
+*   **`102: kpath_gen`**: Generates high-symmetry K-point paths for the Brillouin zone, necessary for band structure and phonon dispersion calculations.
+
+### 🔵 ZONE 2 | Input File Architect
+*Focuses on reading the `scf.dat` template and generating specific, execution-ready `.in` files for Quantum ESPRESSO binaries.*
+
+*   **`200: scf_gen`**: Generates the ground-state Self-Consistent Field (`scf.in`) input file.
+*   **`201: vcrelax_gen`**: Generates the variable-cell relaxation input (`vc-relax.in`) for structural optimization.
+*   **`202: nscf_gen`**: Generates the Non-Self-Consistent Field input (`nscf.in`), setting up dense uniform grids required for DOS or Fermi surface runs.
+*   **`203: pdos_gen`**: Generates the `projwfc.in` file to calculate the Projected Density of States.
+*   **`204: bands_gen`**: Generates the `bands.in` file to calculate electronic band dispersion along the k-path.
+*   **`205: optical_gen`**: Generates inputs for optical properties (e.g., for `epsilon.x`).
+*   **`206: phonon_gen`**: Generates the input file for Density Functional Perturbation Theory (`ph.x`) calculations.
+*   **`207: fs_gen`**: Generates `fs.in` for the `fs.x` executable. Utilizes `check_calc_status` to ensure the parent NSCF calculation completed successfully before writing the file.
+*   **`208: thermopw_gen`**: Configures the `thermo_control` file for the `thermo_pw.x` driver. Verifies the prior SCF run status and captures user input for external pressure.
+
+### 🟣 ZONE 3 | Post-Processor
+*Focuses on extracting, calculating, and formatting raw output data into physical properties.*
+
+*   **`300: optimized`**: Refines symmetry (using `cell2ibrav`) after a `vc-relax` run, updating lattice parameters and atomic positions for subsequent ground-state runs.
+*   **`301: phonon_proc`**: Processes raw phonon output data into plottable dispersion curves.
+*   **`302: pdos_proc`**: Sums and processes Projected Density of States data for plotting.
+*   **`303: optical_proc`**: Derives optical constants (absorption, reflectivity, refractive index) from QE outputs.
+*   **`304: epc_processor`**: Analyzes Electron-Phonon Coupling (EPC) data to calculate superconducting parameters like $T_c$.
+*   **`305: thermopw_proc`**: Scans `scf.out` from a `thermo_pw` run. Extracts Voigt-Reuss-Hill averages, Debye temperature, applied strain tensors, and the symmetrized elastic stiffness matrix (in GPa), formatting everything into a clean `result.txt` file.
+
+### 🟠 ZONE 4 | Data Visualization
+*Focuses on rendering graphical representations of the processed data.*
+
+*   **`401: ht_phonon.sh`**: Bash driver for high-throughput automation of phonon workflows.
+*   **`402: plot-overlay.sh`**: Gnuplot utility for overlaying multiple datasets (e.g., comparing band structures).
+*   **`403: plot-subplots.sh`**: Gnuplot utility for generating side-by-side subplot panels (e.g., Bands + DOS).
+*   **`404: bz_plotter`**: Uses Matplotlib to render an interactive 3D visualization of the Brillouin Zone.
+*   **`405: xrd_plotter`**: Uses Pymatgen to calculate and plot the theoretical X-Ray Diffraction (XRD) pattern based on the relaxed crystal structure.
+
+### 🛠️ The `utils/` Library (Backend Engines)
+*These modules operate invisibly in the background, providing core logic to the main Zones.*
+
+*   **`config_manager`**: Manages user-level settings (like saving/fetching the global `PSEUDO_LIB_PATH`).
+*   **`help_manager`**: Manages the CLI documentation and headless argument flags.
+*   **`qe_xml_parser`**: A robust diagnostic tool that parses Quantum ESPRESSO's `data-file-schema.xml`. Powers the calculation verification to prevent downstream modules from failing blindly.
+*   **`check_strain`**: Scans `thermo_pw` logs to extract the precise $3 \times 3$ strain tensors applied to the crystal during elastic calculations.
+*   **`symmetric_mat`**: Reads raw elastic compliances, forces the $6 \times 6$ matrix into strict symmetry ($C_{ij} = C_{ji}$), converts units from kbar to GPa, and formats it for output.
+
+---
+
+## 💻 Usage
+
+**Interactive Mode:**
+Simply launch the orchestrator to bring up the menu interface:
 ```bash
-# Install directly from the repository
-pipx install git+[https://github.com/FarhanNoor02/QE-Kit.git](https://github.com/FarhanNoor02/QE-Kit.git)
+   qekit.py
 ```
-## System Requirements
-
-    1. Python: 3.8 or higher.
-
-    2. Quantum ESPRESSO: Core binaries (pw.x, ph.x, epsilon.x, etc.) should be in your PATH.
-
-    3. QE-Potcar library: https://github.com/FarhanNoor02/QEPotcar; the pseudopotential library is created via web scraping and 
-       it colects and organises all the pseudopotentials used in QE. Path to this library is to be given during installation.
-
-    4. Gnuplot: Required for the visualization suite in Zone 4.
-
-## 📖 Usage
-Interactive Mode
-
-Simply type the command to launch the stylish CLI menu:
-
-``` bash
-
-qekit
-```
-### Headless/Automation Mode
-For use in HPC scripts or remote clusters, use command flags:
-Bash
-
-qekit --help    # View scientific documentation and command list
-qekit --300     # Run automated symmetry refinement
-qekit --206     # Generate phonon inputs automatically
-
 ## 📈 Roadmap
 
-    
-    1. New plotting capabilities for publication-quality plots
-    
-    2. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
+    v0.4.0: 
 
-    3. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
+    1. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
 
-    4. Upcoming: Electron-Phonon suite for EPW code connectivity.
+    2. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
 
-## To upgrade to the latest version
+    3. Upcoming: Electron-Phonon suite for EPW code connectivity.
+
+## To upgrade to the latest version (v0.3.4)
 ```bash
 pipx upgrade qekit
 ```
