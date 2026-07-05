@@ -22,7 +22,9 @@ dependencies = [
     "ase",
     "matplotlib",
     "pymatgen",
-    "scikit-image"
+    "scikit-image",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
 ]
 
 [project.scripts]
