@@ -1,6 +1,5 @@
+<img width="75" height="75" alt="uploaded-img" src="https://github.com/user-attachments/assets/08e97847-3685-413d-b630-2cc56c243a61" />
 # QE-Kit
-<img width="566" height="585" alt="uploaded-img" src="https://github.com/user-attachments/assets/08e97847-3685-413d-b630-2cc56c243a61" />
-
 
 **A Pre- & Post-Processing Suite for Quantum ESPRESSO**
 *Developed by: Farhan Noor, University of Dhaka*
