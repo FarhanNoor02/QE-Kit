@@ -2,11 +2,12 @@ import os
 import questionary  
 import sys
 from questionary import Style, Separator
+
 from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
     optimized, phonon_proc, optical_proc, pdos_proc, epc_processor,
-    thermopw_gen, thermopw_proc
+    thermopw_gen, thermopw_proc, fs_gen
 )
 
 from utils import (
@@ -26,13 +27,15 @@ custom_style = Style([
 ])
 
 def show_banner():
-    # os.system('clear' if os.name == 'posix' else 'cls') # Optional: Clear terminal on start
+    # Clears the terminal screen every time the main menu is loaded
+    os.system('clear' if os.name == 'posix' else 'cls') 
+    
     banner = r"""
     ╔════════════════════════════════════════════════════════════════╗
-    ║   ____    _____      _      ______  _______                    ║
+    ║   ____    _____     _      ______  _______                     ║
     ║  / __ \  |____|     | |/ /  |_  _| |__  __|                    ║
-    ║ | |  | | | |__      | ' /    | |      | |                      ║
-    ║ | |  | | |  __| --  | <      | |      | |                      ║
+    ║ | |  | | | |__      | ' /     | |     | |                      ║
+    ║ | |  | | |  __| --  | <       | |     | |                      ║
     ║ | |__| | | |___     | . \   _| |_     | |                      ║
     ║  \ __\\  |_____|    |_|\_\ |_____|    |_|                      ║
     ║ A Pre- & Post-Processing Suite for Quantum ESPRESSO            ║
@@ -118,7 +121,7 @@ def automation_visualization_menu():
                 "401: Run HT-Phonon Pipeline (Bash Driver)",
                 "402: Overlaid Plotter (Gnuplot)",
                 "403: Subplot/Spectral Plotter (Gnuplot)",
-                "404: Interactive Brillouin Zone Visualizer (Matplotlib)", #NEW
+                "404: Interactive Brillouin Zone Visualizer (Matplotlib)",
                 "405: Calculated XRD Pattern Plotter (Pymatgen)",
                  Separator(""),
                 "<- Return to Main Menu"
@@ -128,7 +131,7 @@ def automation_visualization_menu():
         if "401" in choice: os.system(f"bash {os.path.join(utils_dir, 'ht_phonon.sh')}")
         elif "402" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-overlay.sh')}")
         elif "403" in choice: os.system(f"bash {os.path.join(utils_dir, 'plot-subplots.sh')}")
-        elif "404" in choice: bz_plotter.run_404_bz_plotter() # <-- NEW
+        elif "404" in choice: bz_plotter.run_404_bz_plotter() 
         elif "405" in choice: xrd_plotter.run_405_xrd_plotter()
         elif "<- Return to Main Menu" in choice: break
 
@@ -139,19 +142,24 @@ def main():
         
         if arg in ["--help", "-h"]:
             help_manager.display_help()
-        elif arg == "--300": 
-            optimized.run_300_structure_refinement()
         elif arg == "--206": 
             phonon_gen.run_phonon_gen(automated=True)
+        elif arg == "--207": 
+            fs_gen.run_207_fs_gen()
+        elif arg == "--208": 
+            thermopw_gen.run_208_thermopw_gen()
+        elif arg == "--300": 
+            optimized.run_300_structure_refinement()
         elif arg == "--301": 
             phonon_proc.run_301_phonon_processing()
         elif arg == "--304": 
             epc_processor.run_304_epc_processor()
+        elif arg == "--305": 
+            thermopw_proc.run_305_thermopw_proc()
         elif arg == "--404": 
-            bz_plotter.run_404_bz_plotter() # <-- NEW
+            bz_plotter.run_404_bz_plotter()
         elif arg == "--405":
             xrd_plotter.run_405_xrd_plotter()
-        
         else:
             print(f"[!] Unknown argument: {arg}")
             help_manager.display_help()
@@ -188,7 +196,9 @@ def main():
                 config_manager.save_pseudo_dir(new_path)
                 print("[+] Path updated.")
         elif "Exit" in category:
-            print("\nExiting QE-Kit. Happy Computing!")
+            # Clears the screen one last time before exiting cleanly
+            os.system('clear' if os.name == 'posix' else 'cls')
+            print("\nExiting QE-Kit. Happy Computing!\n")
             sys.exit()
 
 if __name__ == "__main__":
