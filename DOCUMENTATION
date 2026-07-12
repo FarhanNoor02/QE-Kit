@@ -1,66 +1,123 @@
-QE-Kit Technical Documentation (v0.2.2)
+# QE-Kit Technical Documentation (v0.4.0)
 
-QE-Kit is a Python-based ecosystem designed to provide a structured, error-resistant interface for the Quantum ESPRESSO suite. It organizes the DFT workflow into three logical "Zones," handling everything from the initial crystal structure to the final derivation of optical constants.
-1. Zone 1: Pre-Processing (Discovery & Setup)
+QE-Kit is an integrated Python-based software ecosystem designed to provide a highly structured, error-resistant, parametric interface for the Quantum ESPRESSO suite. By wrapping complex Density Functional Theory (DFT) and Density Functional Perturbation Theory (DFPT) configurations into an intuitive workflow, it bridges the gap between raw crystallographic data and production-ready high-performance computing (HPC) environments.
 
-Zone 1 focuses on preparing the physical model for simulation.
+The framework organizes computational materials workflows into four distinct **Zones** plus infrastructure utilities, driving operations from initial crystal structural discovery to transport property analytics and publication-grade visualizations.
 
-    Structure to Input (100): Utilizes the Atomic Simulation Environment (ASE) to parse .cif, .xyz, or .pdb files. It handles the extraction of atomic positions and cell parameters, mapping them into the QE &SYSTEM namelist.
+---
 
-    Pseudopotential Selection (101): Integrated with the QE-PotLib library. The module scans the user-defined pseudo directory, identifies available elements, and automatically assigns the correct .UPF files to the ATOMIC_SPECIES card.
+## 1. Zone 1: Pre-Processing (Structural Discovery & Setup)
 
-    K-Path Generation (102): Leverages Spglib and Seekpath to detect the crystal's Space Group and generate high-symmetry K-point paths required for Band Structure calculations.
+Zone 1 initializes the physical model, transforming structural files into cleanly mapped electronic datasets.
 
-2. Zone 2: Input Generation (Simulation Engine)
+* **Structure to Input (100):** Leverages the Atomic Simulation Environment (ASE) to ingest standard crystallographic database formats (`.cif`, `.xyz`, `.pdb`). It automatically extracts lattice vectors, scaling dimensions, atomic positions, and fractional coordinates, parsing them directly into the Quantum ESPRESSO `&SYSTEM` namelist.
+* **Pseudopotential Selection & Library Management (101):** Dynamically interfaces with a local or global library managed by `build_pseudo_lib.py`. It inspects the chemical species detected in the parsed structure, matches them against the functional type chosen by the user (PBE, LDA, or Norm-Conserving FHI), verifies the relativistic scheme (scalar vs. full relativistic spin-orbit coupling), and injects the corresponding absolute path and `.UPF` file names into the `ATOMIC_SPECIES` card.
+* **K-Path Generation (102):** Utilizes `Spglib` and `Seekpath` to analyze the crystal structure's space group, detect primitive cells, and automatically compute high-symmetry $K$-point paths along the boundaries of the first Brillouin Zone, preparing the environment seamlessly for electronic Band Structure calculations.
 
-Zone 2 provides a parametric interface to generate input files for various QE executables (pw.x, ph.x, epsilon.x).
-Module	QE Executable	Function
-200: SCF	pw.x	Self-Consistent Field calculation for ground-state energy.
-201: VC-Relax	pw.x	Variable-cell structural optimization.
-202: NSCF	pw.x	Non-Self-Consistent Field for DOS/Bands (dense K-mesh).
-203: PDOS	projwfc.x	Setup for Projected Density of States analysis.
-205: Optical	epsilon.x	Calculation of the frequency-dependent dielectric tensor.
-206: Phonon	ph.x	Linear-response calculation for vibrational modes.
-3. Zone 3: Post-Processing (Analysis & Physics)
+---
 
-This zone contains the "Physics Engines" that transform raw data into insights.
-300: Symmetry Refinement
+## 2. Zone 2: Input Generation (Parametric Simulation Engine)
 
-After a vc-relax calculation, the unit cell parameters and atomic positions often shift. This module parses the final coordinates and uses Spglib to find the refined symmetry. It automatically suggests the correct ibrav and celldm values for subsequent "Production" runs.
-302: PDOS Orbital Summation
+Zone 2 translates physical parameters (energy cutoffs, convergence criteria, smearing factors) into highly precise, syntax-validated input files (`.in`) for specific Quantum ESPRESSO executables.
 
-Quantum ESPRESSO's projwfc.x outputs individual files for every atom and orbital (e.g., Nb.pdos_atm#1(Nb)_wfc#2(d)).
+| Module Identifier | Target Executable | Functional Description |
+| --- | --- | --- |
+| **200: SCF Setup** | `pw.x` | Calculates ground-state electronic density and total energy via self-consistent field iterations. |
+| **201: VC-Relax Setup** | `pw.x` | Performs variable-cell structural optimization, relaxing both internal atomic forces and external cell stress tensors. |
+| **202: NSCF Setup** | `pw.x` | Non-Self-Consistent Field calculation utilizing a dense, uniform $K$-mesh; prerequisite for DOS, PDOS, and Fermi Surface evaluations. |
+| **203: DOS/PDOS Setup** | `projwfc.x` | Projects the electronic states onto localized atomic orbitals, establishing detailed orbital-projected Density of States. |
+| **204: Bands Setup** | `pw.x` | Computes electronic eigenvalues along the high-symmetry $K$-path generated by Module 102. |
+| **205: Optical Setup** | `epsilon.x` | Computes the frequency-dependent complex dielectric tensor ($\varepsilon(\omega) = \varepsilon_1 + i\varepsilon_2$) to study optoelectronic response. |
+| **206: Phonon Setup** | `ph.x` | Invokes Linear-Response DFPT to compute monochromatic dynamical matrices on a defined $q$-point grid for lattice dynamics. |
+| **207: Fermi Surface Setup** | `fs.x` | Maps out energy eigenvalues across the 3D Brillouin Zone at the Fermi level, saving outputs explicitly formatted for Fermi surface renders. |
+| **208: Thermo_PW Setup** | `thermo_pw.x` | Sets up automated multi-volume calculations to extract macro-mechanical properties (elastic constants) and quasi-harmonic thermodynamics. |
 
-    Logic: The module automatically detects all .pdos_atm* files in the directory.
+---
 
-    Aggregation: It sums the contributions based on the orbital character (s, p, d, f) and atom type, outputting clean, consolidated files ready for plotting.
+## 3. Zone 3: Post-Processing (Analysis & Physics Engines)
 
-303: Optical Constants Derivation
+Zone 3 extracts raw numerical data from completed calculations, running it through advanced mathematical filters to compute macro- and microscopic physical observables.
 
-This module processes the output of epsilon.x (epsr_*.dat and epsi_*.dat).
+* **300: Symmetry Refinement (`cell2ibrav`):** Post-relaxation cell structures frequently break perfect initial symmorphic constraints due to numerical drift. This engine parses relaxed atomic coordinates, passes them to `Spglib` to identify the correct space group within a strict tolerance, and maps the refined structure back onto explicit Quantum ESPRESSO symmetry parameters (`ibrav` and `celldm`), readying it for flawless production runs.
+* **301: Phonon Dispersion Processing:** Parses interatomic force constants (IFCs) calculated by `q2r.x` and `matdyn.x`, tracking vibrational frequencies along the Brillouin Zone boundaries to isolate acoustic and optical phonon branches, and verifying dynamical stability by checking for imaginary modes.
+* **302: PDOS Orbital Summation:** Cleans up the typical file clutter generated by `projwfc.x` (which outputs individual files for every atom, state, and magnetic quantum number). The module dynamically searches the workspace, maps orbital characters ($s, p, d, f$), aggregates total contributions per element, and outputs a single unified, multi-column dataset.
+* **303: Optical Constant Derivation:** Ingests the complex dielectric components calculated by `epsilon.x`. For anisotropic systems, it enforces isotropic tensor averaging:
 
-    Isotropic Averaging: For anisotropic materials, it calculates the average dielectric function: εavg​=(εx​+εy​+εz​)/3.
+$$\varepsilon_{\text{avg}}(\omega) = \frac{\varepsilon_x + \varepsilon_y + \varepsilon_z}{3}$$
 
-    Constants Derivation: It applies the electromagnetic relations to compute the Real Refractive Index (n), Extinction Coefficient (k), Reflectivity (R), and Absorption Coefficient (α) in cm−1.
 
-    EELS Integration: It also processes Electron Energy Loss Spectroscopy (EELS) data if available.
 
-4. System Utilities (utils/)
+It then analytically derives critical engineering metrics including the Real Refractive Index ($n$), Extinction Coefficient ($k$), Reflectivity ($R$), Electron Energy Loss Spectroscopy (EELS) loss functions, and the optical Absorption Coefficient ($\alpha$) in units of $\text{cm}^{-1}$.
+* **304: Electron-Phonon Coupling (EPC) Analysis:** Processes outputs from `lambda.x` to evaluate superconducting transition signatures. It aggregates the Eliashberg spectral function ($\alpha^2F(\omega)$), derives the total electron-phonon coupling constant ($\lambda$), and calculates the critical superconducting transition temperature ($T_c$) using the McMillian or Allen-Dynes formulations.
+* **305: Thermo_PW Analysis:** Compiles thermodynamic datasets from `thermo_pw.x` logs, evaluating bulk moduli, shear moduli, Poisson's ratios, thermal expansion coefficients, and temperature-dependent heat capacities.
 
-    config_manager.py: Manages the global configuration file (~/.qekit_config.json). It stores the path to the user's pseudopotential library so it doesn't need to be defined for every new project.
+---
 
-    Terminal UI: Powered by questionary, providing a keyboard-accessible, styled menu with logical "Zone" separators and gold/green University of Dhaka branding.
+## 4. Zone 4: Data Visualization & Automation
 
-5. Directory Structure
-Plaintext
+Zone 4 offers standalone execution hooks or integrated visualization scripts to verify calculation behaviors instantly.
 
+* **401: High-Throughput Phonon Pipeline:** A performance-tuned Bash driver (`ht_phonon.sh`) that links sequential lattice dynamics tasks (`ph.x` $\rightarrow$ `q2r.x` $\rightarrow$ `matdyn.x`) into an automated stream.
+* **402 & 403: Gnuplot Scripting Engines:** Automated macros (`plot-overlay.sh`, `plot-subplots.sh`) that read data tables and generate highly detailed electronic band structures and projected density-of-states configurations natively.
+* **404: Interactive Brillouin Zone Visualizer:** Uses `Matplotlib` and `Numpy` to render interactive 3D representations of the first Brillouin Zone. It overlays high-symmetry points and draws the generated $K$-point path trajectories dynamically.
+* **405: Calculated XRD Pattern Plotter:** Integrates with `Pymatgen` to simulate X-ray Diffraction intensities directly from structural configurations, plotting clear peaks labeled with relevant Miller Indices ($hkl$) to verify experimental phase matching.
+
+---
+
+## 5. System Infrastructure (`utils/` & Environment)
+
+* **`config_manager.py`:** Handles the local persistence layer via `~/.qekit_config.json`. This stores environment variables such as global pseudopotential library paths, system execution profiles, and default operational paths.
+* **`build_pseudo_lib.py`:** A web-scraping package downloader. It parses official online pseudopotential databases, extracts functional files (PBE/LDA/NC), automatically classifies them by analyzing internal nomenclature strings, and deposits them into a structured file hierarchy:
+
+```text
+~/QE-POTCAR/
+├── PBE/
+│   ├── scalar/
+│   │   ├── PAW/
+│   │   └── USPP/
+│   └── full/
+└── LDA/
+
+```
+
+* **Terminal Interface & Headless Mode:** Built on `questionary`, implementing a highly legible, color-coded, keyboard-navigable workflow using distinct University of Dhaka visual signatures. The application features full command-line flag handling (e.g., `qekit --206`, `--304`) to facilitate completely headless batch job scripts.
+
+---
+
+## 6. Project Architecture
+
+The codebase maintains a strictly modular structure, separating visual rendering tasks, infrastructure layers, and physical computations cleanly:
+
+```text
 QE-Kit/
-├── qekit.py           # Master CLI Entry point
-├── modules/           # Physics & Generation Logic
-│   ├── structure2in.py
-│   ├── optical_proc.py
-│   ├── pdos_proc.py
+├── qekit.py                  # Master CLI Orchestrator & Entry Point
+├── pyproject.toml            # Metadata, Dependency, and Script Mapping
+├── MANIFEST.in               # Configuration to bundle Bash/Asset additions
+├── modules/                  # Computation & Physics Generation Engines
+│   ├── __init__.py
+│   ├── structure2in.py       # Structural ingestion (ASE backend)
+│   ├── pseudo_select.py      # Automated UPF mapping
+│   ├── build_pseudo_lib.py   # Scraper/downloader engine
+│   ├── scf_gen.py            # Ground-state input builder
+│   ├── optical_proc.py       # Optoelectronic tensor derivation
+│   ├── epc_processor.py      # Eliashberg/$T_c$ analytics
 │   └── ...
-├── utils/             # Infrastructure & Config
-│   └── config_manager.py
-└── pyproject.toml     # Package Metadata & Dependencies
+└── utils/                    # Data infrastructure & Plotting routines
+    ├── __init__.py
+    ├── config_manager.py     # JSON state manager
+    ├── bz_plotter.py         # 3D Brillouin Zone visualizer
+    ├── xrd_plotter.py        # Simulated XRD renderer
+    ├── ht_phonon.sh          # Phonon automated chain script
+    └── ...
+
+```
+
+---
+
+## 7. Package Distribution Metadata
+
+QE-Kit is fully compliant with the modern `PEP 517` standard using `setuptools`.
+
+* **Python Target:** `\ge 3.8`
+* **Core Dependencies Managed:** `questionary`, `requests`, `beautifulsoup4`, `matplotlib`, `numpy`, `pymatgen`.
+* **CLI Entry Point:** Registered as a global binary command via `pyproject.toml`, allowing system-wide invocation by simply executing `qekit` in any terminal environment.
