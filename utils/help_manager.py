@@ -72,30 +72,35 @@ HELP_DATA = {
             "output": "Prints clean crystalline matrices; updates scf.dat variables"
         },
         "--301": {
+    "desc": "Post-processes bands.x output, extracting symmetry coordinates and Fermi level.",
+    "prereq": "Successful bands.x run and nscf.out",
+    "output": "bandpp.out and extracted high-symmetry X-coordinates for plotting"
+        },
+        "--302": {
             "desc": "Processes interatomic force constants into plottable phonon dispersion arrays.",
             "prereq": "Raw ph.x output matrices",
             "output": "Clean data arrays optimized for band/phonon plotters"
         },
-        "--302": {
+        "--303": {
             "desc": "Sums individual orbital contributions to yield total system PDOS data.",
             "prereq": "Raw projwfc.x output fragments",
             "output": "Aggregated spectral arrays optimized for graphing"
         },
-        "--303": {
+        "--304": {
             "desc": "Extracts dielectric functions and derives macroscopic optical constants.",
             "prereq": "Raw epsilon.x structural matrices",
             "output": "Reflectivity, absorption coefficient, and refractive index arrays"
         },
-        "--304": {
+        "--305": {
             "desc": "Calculates isotropic electron-phonon coupling matrices and maps superconducting parameters.",
             "prereq": "Completed Eliashberg function (alpha2F) output data",
             "output": "Prints critical temperature (Tc), lambda parameter, and log-average frequency"
         },
-        "--305": {
+        "--306": {
             "desc": "Parses dynamic thermodynamic logs, strain tensors, and elastic compliance states.",
             "prereq": "Completed thermo_pw.x output logs",
             "output": "result.txt (VRH averages, Debye Temp, applied strains, symmetric GPa matrix)"
-        }
+        },
     },
     "ZONE 4 | DATA VISUALIZATION (Graphical Rendering)": {
         "--401": {
