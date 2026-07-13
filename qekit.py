@@ -7,7 +7,7 @@ from modules import (
     structure2in, pseudo_select, kpath_gen, scf_gen, vcrelax_gen, 
     nscf_gen, pdos_gen, bands_gen, optical_gen, phonon_gen, 
     optimized, phonon_proc, optical_proc, pdos_proc, epc_processor,
-    thermopw_gen, thermopw_proc, fs_gen, build_pseudo_lib
+    thermopw_gen, thermopw_proc, fs_gen, build_pseudo_lib, bands_proc
 )
 
 from utils import (
@@ -28,16 +28,16 @@ custom_style = Style([
 
 def show_banner():
     # Clears the terminal screen every time the main menu is loaded
-    os.system('clear' if os.name == 'posix' else 'cls') 
-    
+    os.system('clear' if os.name == 'posix' else 'cls')
+
     banner = r"""
     ╔════════════════════════════════════════════════════════════════╗
-    ║   ____    _____     _      ______  _______                     ║
-    ║  / __ \  |____|     | |/ /  |_  _| |__  __|                    ║
-    ║ | |  | | | |__      | ' /     | |     | |                      ║
-    ║ | |  | | |  __| --  | <       | |     | |                      ║
-    ║ | |__| | | |___     | . \   _| |_     | |                      ║
-    ║  \ __\\  |_____|    |_|\_\ |_____|    |_|                      ║
+    ║   ____    _____     _        _____   _______                   ║
+    ║  / __ \  |____|     | |/ /  |__  __| |__  __|                  ║
+    ║ | |  | | | |__      | ' /     | |      | |                     ║
+    ║ | |  | | |  __| --  | <       | |      | |                     ║
+    ║ | |__| | | |___     | . \    _| |_     | |                     ║
+    ║  \ __\\  |_____|    |_|\_\  |_____|    |_|                     ║
     ║ A Pre- & Post-Processing Suite for Quantum ESPRESSO            ║
     ║                                                                ║
     ║ [ By: Farhan Noor, University of Dhaka ]                       ║
@@ -96,19 +96,25 @@ def post_processing_menu():
             "--- ZONE 3 | POST-PROCESSING ---",
             style=custom_style,
             choices=[
-                "300: Refine Symmetry (cell2ibrav)", "301: Phonon Dispersion Setup",
-                "302: PDOS Summation", "303: Optical Constant Derivation", "304: e-ph analysis",
-                "305: Thermo_PW Analysis",
+                "300: Refine Symmetry (cell2ibrav)", 
+                "301: Band Structure Post-Processing", # <-- Inserted here
+                "302: Phonon Dispersion Setup",
+                "303: PDOS Summation", 
+                "304: Optical Constant Derivation", 
+                "305: e-ph analysis",
+                "306: Thermo_PW Analysis",
                 Separator(""), "<- Return to Main Menu"
             ]
         ).ask()
         
+        # UI Number maps to the existing Function Name
         if "300" in choice: optimized.run_300_structure_refinement()
-        elif "301" in choice: phonon_proc.run_301_phonon_processing()
-        elif "302" in choice: pdos_proc.run_302_pdos_summation()
-        elif "303" in choice: optical_proc.run_303_optical_processing()
-        elif "304" in choice: epc_processor.run_304_epc_processor()
-        elif "305" in choice: thermopw_proc.run_305_thermopw_proc()
+        elif "301" in choice: bands_proc.run_306_bands_processing() 
+        elif "302" in choice: phonon_proc.run_301_phonon_processing()
+        elif "303" in choice: pdos_proc.run_302_pdos_summation()
+        elif "304" in choice: optical_proc.run_303_optical_processing()
+        elif "305" in choice: epc_processor.run_304_epc_processor()
+        elif "306" in choice: thermopw_proc.run_305_thermopw_proc()
         elif "<- Return to Main Menu" in choice: break
 
 def automation_visualization_menu():
@@ -151,10 +157,17 @@ def main():
         elif arg == "--300": 
             optimized.run_300_structure_refinement()
         elif arg == "--301": 
+            bands_proc.run_306_bands_processing(automated=True)
+        elif arg == "--302": 
             phonon_proc.run_301_phonon_processing()
+        # You will need to add these to main() if they aren't there already
+        elif arg == "--303": 
+            pdos_proc.run_302_pdos_summation()
         elif arg == "--304": 
-            epc_processor.run_304_epc_processor()
+            optical_proc.run_303_optical_processing()
         elif arg == "--305": 
+            epc_processor.run_304_epc_processor()
+        elif arg == "--306": 
             thermopw_proc.run_305_thermopw_proc()
         elif arg == "--404": 
             bz_plotter.run_404_bz_plotter()
