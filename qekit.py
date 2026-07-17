@@ -12,7 +12,7 @@ from modules import (
 
 from utils import (
     config_manager, help_manager, bz_plotter, xrd_plotter,
-    check_strain, symmetric_mat
+    check_strain, symmetric_mat, citations
 ) 
 
 # --- Stylish Layout ---
@@ -193,6 +193,7 @@ def main():
                 " ▶ ZONE 4 | Visualization",
                 Separator("========================================="),
                 " ⚙ Settings",
+                " 📚 References & Citations",
                 " ✖ Exit Application"
             ]
         ).ask()
@@ -232,6 +233,8 @@ def main():
                     # Clear screen to keep the UI clean when returning to Mainmenu
                     os.system('clear' if os.name == 'posix' else 'cls')
                     break
+        elif "References" in category:         
+            citations.display_citations()
         elif "Exit" in category:
             # Clears the screen one last time before exiting cleanly
             os.system('clear' if os.name == 'posix' else 'cls')
