@@ -111,7 +111,7 @@ def post_processing_menu():
         if "300" in choice: optimized.run_300_structure_refinement()
         elif "301" in choice: bands_proc.run_306_bands_processing() 
         elif "302" in choice: phonon_proc.run_301_phonon_processing()
-        elif "303" in choice: pdos_proc.run_302_pdos_summation()
+        elif "303" in choice: pdos_proc.run_302_pdos_processing()
         elif "304" in choice: optical_proc.run_303_optical_processing()
         elif "305" in choice: epc_processor.run_304_epc_processor()
         elif "306" in choice: thermopw_proc.run_305_thermopw_proc()
