@@ -1,3 +1,4 @@
+# modules/kpath_gen.py
 import os
 import seekpath
 import numpy as np
@@ -47,14 +48,31 @@ def run_kpath_gen():
     elif k_type == "C":
         structure = parse_dat_for_seekpath(dat_file)
         if structure:
-            result = seekpath.get_path(structure, with_time_reversal=True)
-            k_output = format_seekpath_to_qe(result)
+            try:
+                # FIX: Pass symprec directly to seekpath and feed it the raw structure.
+                # Seekpath handles the primitive reduction internally safely.
+                result = seekpath.get_path(structure, with_time_reversal=True, symprec=1e-3)
+                k_output = format_seekpath_to_qe(result)
+                
+                orig_atoms = len(structure[2])
+                prim_atoms = len(result['primitive_types'])
+                
+                print(f"[+] Space Group identified: {result['spacegroup_international']} ({result['spacegroup_number']})")
+                if orig_atoms != prim_atoms:
+                    print(f"[+] Primitive cell found. Atoms reduced from {orig_atoms} to {prim_atoms}")
+                    print("[!] WARNING: Seekpath generated K-points based on the primitive cell.")
+                    print("    Ensure your scf.dat matches this primitive structure for band calculations.")
+            except Exception as e:
+                print(f"[!] Seekpath failed: {e}")
+                print("[*] Try running '300: Refine Symmetry' to clean up coordinates first.")
+                return
 
     # 2. WIPE AND REPLACE LOGIC
     if k_output:
         update_scf_dat_with_kpoints(dat_file, k_output)
     else:
         print("\n[!] No K-Points were added.")
+
 
 def update_scf_dat_with_kpoints(filename, new_kpoints):
     """Reads scf.dat, removes any existing K_POINTS block, and adds the new one."""
@@ -65,28 +83,25 @@ def update_scf_dat_with_kpoints(filename, new_kpoints):
     skip_mode = False
 
     for line in lines:
-        # If we hit a K_POINTS line, start skipping until we hit a blank line or a new block
         if "K_POINTS" in line:
             skip_mode = True
             continue
         
         if skip_mode:
-            # Stop skipping if we hit an empty line or another QE Card
             if line.strip() == "" or any(card in line for card in ["ATOMIC_", "CELL_"]):
                 skip_mode = False
-                # If it's a card, we don't want to lose it, so we append it
                 if any(card in line for card in ["ATOMIC_", "CELL_"]):
                     final_lines.append(line)
             continue
         
         final_lines.append(line)
 
-    # Re-write the file with the new K_POINTS block at the end
     with open(filename, 'w') as f:
         f.writelines(final_lines)
         f.write("\n" + new_kpoints)
     
     print(f"\n[+] Success! {filename} updated. Old K-points removed and replaced.")
+
 
 def parse_dat_for_seekpath(filename):
     try:
@@ -112,20 +127,13 @@ def parse_dat_for_seekpath(filename):
         
         raw_structure = (np.array(cell), np.array(positions), numbers)
         
-        # --- THE FIX: FIND PRIMITIVE ---
-        # We find the actual primitive cell with a slightly looser tolerance
-        # to merge those atoms (8, 12), (9, 13) etc.
-        primitive_structure = spglib.find_primitive(raw_structure, symprec=1e-3)
-        
-        if primitive_structure is None:
-            print("[!] Spglib could not find primitive cell. Using raw.")
-            return raw_structure
-            
-        print(f"[+] Primitive cell found. Atoms reduced from {len(numbers)} to {len(primitive_structure[2])}")
-        return primitive_structure
+        # FIX: Return raw_structure directly. 
+        # Pre-processing with spglib.find_primitive caused numerical collisions inside seekpath.
+        return raw_structure
 
     except Exception as e:
         print(f"Parsing error: {e}"); return None
+
 
 def format_seekpath_to_qe(result):
     path = result['path']
@@ -139,4 +147,3 @@ def format_seekpath_to_qe(result):
         p = coords[label]
         output += f"  {p[0]:.4f} {p[1]:.4f} {p[2]:.4f} 20 ! {label}\n"
     return output
-
