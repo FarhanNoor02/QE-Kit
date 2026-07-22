@@ -110,4 +110,3 @@ def run_301_phonon_processing():
     
     print("[+] Generated matdyndisp.in with extracted K-path")
     print("\n[v] Post-processing files ready. Sequence: q2r.x -> matdyn.x (DOS) -> matdyn.x (Dispersion)")
-
