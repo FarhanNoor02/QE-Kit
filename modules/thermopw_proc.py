@@ -12,7 +12,7 @@ def run_305_thermopw_proc():
         print("[!] Error: scf.out not found.")
         return
 
-    with open(result.txt, "w") as res:
+    with open(result_file, "w") as res:
         res.write("--- Thermo_PW Analysis Results ---\n\n")
 
         # 1. Parse VRH and Debye
