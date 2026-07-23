@@ -1,4 +1,3 @@
-# modules/bands_proc.py
 import os
 import re
 import subprocess
@@ -11,13 +10,13 @@ def run_306_bands_processing(automated=False):
     nscf_out = "nscf.out"
     bandpp_in = "bandpp.in"
     bandpp_out = "bandpp.out"
+    dat_file = "scf.dat"
 
     if not os.path.exists(bands_in):
         print(f"[!] Error: '{bands_in}' not found in the current directory.")
         return
 
     # 1. Extract prefix and outdir from bands.in FIRST
-    # We need these variables to feed into the XML parser
     prefix = "pwscf"
     outdir = "./outdir/"
     
@@ -122,7 +121,47 @@ def run_306_bands_processing(automated=False):
     else:
         print(f"[!] '{nscf_out}' not found. Cannot extract Fermi energy.")
 
-    # 8. Print Console Summary
+    # 8. SYNC METADATA TO SCF.DAT
+    if os.path.exists(dat_file):
+        with open(dat_file, 'r') as f:
+            dat_lines = f.readlines()
+        
+        # Strip out any existing metadata to prevent duplicates on re-runs
+        clean_lines = []
+        for line in dat_lines:
+            if line.startswith("# [BAND_METADATA]") or \
+               line.startswith("# FERMI_ENERGY:") or \
+               line.startswith("# KPATH:") or \
+               line.startswith("# --- BAND"):
+                continue
+            clean_lines.append(line)
+        
+        # Build the new metadata block
+        kpath_pairs = [f"{labels[i]},{x_coords[i]}" for i in range(min(len(labels), len(x_coords)))]
+        kpath_string = " | ".join(kpath_pairs)
+        
+        new_meta = [
+            "# [BAND_METADATA]\n",
+            f"# FERMI_ENERGY: {e_fermi}\n",
+            f"# KPATH: {kpath_string}\n",
+            "# --- BAND METADATA END ---\n"
+        ]
+        
+        # Insert metadata right after the pseudo_dir header (if it exists) or at the top
+        insert_idx = 0
+        if len(clean_lines) > 0 and clean_lines[0].startswith("# PSEUDO_DIR_PATH"):
+            insert_idx = 1
+            
+        final_lines = clean_lines[:insert_idx] + new_meta + clean_lines[insert_idx:]
+        
+        with open(dat_file, 'w') as f:
+            f.writelines(final_lines)
+            
+        sync_msg = f"[*] Band metadata synced to '{dat_file}' for Zone 4 plotters."
+    else:
+        sync_msg = f"[!] '{dat_file}' not found. Could not sync metadata."
+
+    # 9. Print Console Summary
     print("\n" + "="*55)
     print(" 📊 BAND STRUCTURE DATA EXTRACTED")
     print("="*55)
@@ -137,8 +176,9 @@ def run_306_bands_processing(automated=False):
         
     print("-" * 55)
     print(f"[*] K-Path sequence: {' - '.join(kpath_str)}")
-    print("="*55 + "\n")
-    print(f"[+] Plottable dataset written to: '{prefix}.band.dat.gnu'")
+    print("="*55)
+    print(sync_msg)
+    print(f"[+] Plottable dataset written to: '{prefix}.band.dat.gnu'\n")
 
 if __name__ == "__main__":
     run_306_bands_processing()
