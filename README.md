@@ -79,13 +79,19 @@ Simply launch the orchestrator to bring up the menu interface:
 ```
 ## 📈 Roadmap
 
-    v0.4.0: 
+    Upcoming: 
 
-    1. Upcoming: DFT+U (Hubbard) support with linear response (hp.x) automation.
+    1. Molecular Dynamics support
 
-    2. Upcoming: Spin-Orbit Coupling (SOC) and Wannier90 integration.
+    2. Thermoelectric properties computation
 
-    3. Upcoming: Electron-Phonon suite for EPW code connectivity.
+    3. DFT+U (Hubbard) support with linear response (hp.x) automation.
+
+    4. Spin-Orbit Coupling (SOC) and Wannier90 integration.
+
+    5. Electron-Phonon suite for EPW code connectivity.
+
+    6. Publication-grade plotting utilities in Zone-4
 
 ## To upgrade to the latest version
 ```bash
